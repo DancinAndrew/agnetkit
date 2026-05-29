@@ -1,13 +1,14 @@
 # CLAUDE.md — operating contract
 
 This project is wired with **agentkit**: a layered AI software-development workflow.
-Three layers, top governs the ones below:
+Four layers, top governs the ones below:
 
 1. **Principles** (this file) — how you think and how you change code.
-2. **Spec layer** — OpenSpec in `openspec/` — agree on *what* and *why* before code.
-3. **Execution layer** — ECC agents, skills, and rules in `.claude/` — *do* and *verify* the work.
+2. **Spec layer** — OpenSpec in `openspec/` — agree on *what* and *why* **before** code.
+3. **System docs** — living record in `sysdoc/` — what the system **currently** is.
+4. **Execution layer** — ECC agents, skills, and rules in `.claude/` — *do* and *verify* the work.
 
-> If guidance ever conflicts: **Principles > Spec layer > Execution rules**. The rules
+> If guidance ever conflicts: **Principles > Spec layer > System docs > Execution rules**. The rules
 > elaborate the principles; they never override them.
 
 ---
@@ -97,7 +98,13 @@ obviously-scoped local changes. Still write a failing test first if behavior cha
    - `silent-failure-hunter` — when adding error handling or touching async/IO paths.
 4. **Verify** — `verification-loop` / `eval-harness` skills: check against the task's
    success criteria. Loop until green. Don't declare done on a partial pass.
-5. **Archive** (spec-first only) — `/opsx:archive` to fold the change's specs back.
+5. **Update sysdoc** — after any change that alters the system's shape (new component,
+   changed API contract, new external dependency, architectural pivot), update the relevant
+   file in `sysdoc/`. One paragraph is enough; don't over-document.
+   - New component or service → `sysdoc/OVERVIEW.md`
+   - Architectural decision with tradeoffs → `sysdoc/ARCHITECTURE.md`
+   - Changed setup, env var, or deploy step → `sysdoc/RUNBOOK.md`
+6. **Archive** (spec-first only) — `/opsx:archive` to fold the change's specs back.
 
 ---
 

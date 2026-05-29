@@ -2,12 +2,13 @@
 #
 # agentkit installer — deploy the layered AI dev workflow into a project (or globally).
 #
-#   ./install.sh [--scope project|global] [--target DIR] [--no-openspec] [--force]
+#   ./install.sh [--scope project|global] [--target DIR] [--no-openspec] [--no-sysdoc] [--force]
 #
 #   --scope project   (default) install into a single project's ./.claude + ./CLAUDE.md
 #   --scope global    install into ~/.claude (applies to all projects on this machine)
 #   --target DIR      project root to install into (default: current directory)
 #   --no-openspec     skip installing the OpenSpec CLI and running `openspec init`
+#   --no-sysdoc       skip scaffolding the sysdoc/ system documentation directory
 #   --force           overwrite an existing CLAUDE.md instead of writing CLAUDE.md.agentkit
 #
 # The ECC subset (agents/skills/rules/commands/contexts/mcp-configs) is vendored in this
@@ -23,6 +24,7 @@ CONTRACT="$SCRIPT_DIR/CLAUDE.md"
 SCOPE="project"
 TARGET="$(pwd)"
 DO_OPENSPEC=1
+DO_SYSDOC=1
 FORCE=0
 
 while [ $# -gt 0 ]; do
@@ -30,6 +32,7 @@ while [ $# -gt 0 ]; do
     --scope)      SCOPE="${2:-}"; shift 2 ;;
     --target)     TARGET="${2:-}"; shift 2 ;;
     --no-openspec) DO_OPENSPEC=0; shift ;;
+    --no-sysdoc)  DO_SYSDOC=0; shift ;;
     --force)      FORCE=1; shift ;;
     -h|--help)    sed -n '2,18p' "$0"; exit 0 ;;
     *) echo "[agentkit] unknown option: $1" >&2; exit 2 ;;
@@ -92,6 +95,24 @@ else
   echo "[agentkit] skipping OpenSpec (--no-openspec)."
 fi
 
+# sysdoc: system documentation layer.
+if [ "$DO_SYSDOC" -eq 1 ] && [ "$SCOPE" = "project" ]; then
+  if [ -d "$TARGET/sysdoc" ]; then
+    echo "[agentkit] sysdoc/ already present — skipping scaffold."
+  else
+    echo "[agentkit] scaffolding system docs -> $TARGET/sysdoc"
+    mkdir -p "$TARGET/sysdoc"
+    cp "$SCRIPT_DIR/payload/sysdoc/"*.md "$TARGET/sysdoc/"
+    echo "[agentkit] wrote sysdoc/OVERVIEW.md, ARCHITECTURE.md, RUNBOOK.md"
+  fi
+  SYSDOC_SUMMARY="$TARGET/sysdoc"
+elif [ "$DO_SYSDOC" -eq 1 ]; then
+  echo "[agentkit] global scope: sysdoc is per-project — run install.sh inside each project."
+  SYSDOC_SUMMARY="per-project (run install.sh in each project)"
+else
+  SYSDOC_SUMMARY="skipped (--no-sysdoc)"
+fi
+
 if [ "$DO_OPENSPEC" -eq 0 ]; then
   SPEC_SUMMARY="skipped (--no-openspec)"
 elif [ "$SCOPE" = "project" ]; then
@@ -106,10 +127,12 @@ cat <<EOF
   Execution layer : $CLAUDE_DIR  (agents, skills, rules, commands, contexts, mcp-configs)
   Contract        : $TARGET/CLAUDE.md
   Spec layer      : $SPEC_SUMMARY
+  System docs     : $SYSDOC_SUMMARY
 
   Next:
     1. Skim CLAUDE.md and fill in section 6 (Project-specific).
-    2. Wire MCP servers from $CLAUDE_DIR/mcp-configs/mcp-servers.json into your client.
-    3. Start a change:  /opsx:propose "your first feature"
-    4. Hooks are intentionally NOT vendored — see docs/HOOKS.md for why and how to add ECC's natively.
+    2. Fill in sysdoc/OVERVIEW.md with your system's name and main components.
+    3. Wire MCP servers from $CLAUDE_DIR/mcp-configs/mcp-servers.json into your client.
+    4. Start a change:  /opsx:propose "your first feature"
+    5. Hooks are intentionally NOT vendored — see docs/HOOKS.md for why and how to add ECC's natively.
 EOF

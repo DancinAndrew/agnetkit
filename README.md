@@ -1,13 +1,14 @@
 # agentkit
 
 A one-command AI software-development setup for **Python / FastAPI / RAG-MLOps** projects.
-It packages three things into one deployable layer:
+It packages four things into one deployable layer:
 
-| Layer | Source | Role |
-|-------|--------|------|
-| **Principles** | Karpathy 4 principles | how the agent thinks & changes code (`CLAUDE.md` §1) |
-| **Spec layer** | OpenSpec | agree on *what / why* before code (`openspec/`) |
-| **Execution layer** | curated ECC subset | agents, skills, rules that *do & verify* the work (`.claude/`) |
+| Layer | Role |
+|-------|------|
+| **Principles** | how the agent thinks & changes code (`CLAUDE.md` §1) |
+| **Spec layer** | agree on *what / why* **before** code (`openspec/`) |
+| **System docs** | living record of what the system **currently** is (`sysdoc/`) |
+| **Execution layer** | agents, skills, rules that *do & verify* the work (`.claude/`) |
 
 Design goal: a small, opinionated, **vendored** subset — not all of ECC. It practices the
 Simplicity-First principle it ships with. See `docs/ARCHITECTURE.md` for what was cut and why.
@@ -51,6 +52,7 @@ Re-running is safe (idempotent); an existing `CLAUDE.md` is never overwritten un
 - `.claude/rules/` — `common/` (10) + `python/` (6) always-follow rules.
 - `.claude/commands/` — 9 convenience slash entries.
 - `openspec/` — spec workspace scaffolded by `openspec init`.
+- `sysdoc/` — system documentation scaffolded by agentkit: `OVERVIEW.md`, `ARCHITECTURE.md`, `RUNBOOK.md`.
 
 ## The workflow in one line
 
@@ -62,6 +64,7 @@ Full detail: `docs/WORKFLOW.md`.
 
 - `docs/WORKFLOW.md` — the OpenSpec ↔ ECC handoff, with the decision rule.
 - `docs/ARCHITECTURE.md` — the layer model and the curation rationale (what was cut).
+- `docs/CHEATSHEET.md` — skills, agents, and commands quick reference.
 - `docs/UPDATING.md` — how to re-sync the vendored ECC subset to a newer commit.
 - `docs/HOOKS.md` — why hooks aren't vendored, and how to add ECC's natively if you want them.
 - `ATTRIBUTIONS.md` — licenses (ECC, Karpathy, OpenSpec — all MIT).

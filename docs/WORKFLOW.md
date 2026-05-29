@@ -28,6 +28,9 @@ agentkit runs two systems in sequence. OpenSpec owns **what/why** (the spec). EC
                             │
                             ▼
                    /opsx:archive   (spec-first lane only — fold specs back)
+                            │
+                            ▼
+                   update sysdoc/  (if system shape changed — see CLAUDE.md §3.5)
 ```
 
 ## Decision rule — which lane?
@@ -79,7 +82,10 @@ security-reviewer       → auth + replay-attack check on the idempotency key
 fastapi-reviewer        → endpoint contract, status codes, error shape
 verification-loop       → all tasks' success criteria green
 
-/opsx:archive           → specs folded back; ready for next change
+/opsx:archive           → specs folded back
+sysdoc/ARCHITECTURE.md  → record the idempotency-key decision + tradeoffs
+sysdoc/RUNBOOK.md       → add the new env vars (REDIS_URL, IDEMPOTENCY_TTL)
+sysdoc/OVERVIEW.md      → note the new "Payments" component in the component table
 ```
 
 ## Worked example (fast-path)

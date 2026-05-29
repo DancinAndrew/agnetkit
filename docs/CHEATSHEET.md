@@ -120,3 +120,17 @@
 ```
 /opsx:propose → 審 proposal.md + design.md + tasks.md → 實作 → /opsx:archive
 ```
+
+---
+
+## sysdoc/ — 系統文件（as-built）
+
+> `openspec/` 記錄**你打算蓋什麼**；`sysdoc/` 記錄**系統現在長什麼樣子**。
+
+| 檔案 | 何時更新 |
+|------|---------|
+| `sysdoc/OVERVIEW.md` | 新增元件、改變系統邊界 |
+| `sysdoc/ARCHITECTURE.md` | 做了重要架構決策（有 tradeoff 的那種）|
+| `sysdoc/RUNBOOK.md` | 改了 env var、啟動步驟、部署流程 |
+
+更新時機：每次 `/opsx:archive` 之後，確認 sysdoc 有沒有需要跟著改。
