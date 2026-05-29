@@ -1,0 +1,9 @@
+[submodule "deps/andrej-karpathy-skills"]
+	path = deps/andrej-karpathy-skills
+	url = https://github.com/multica-ai/andrej-karpathy-skills
+[submodule "deps/openspec"]
+	path = deps/openspec
+	url = https://github.com/Fission-AI/OpenSpec
+[submodule "deps/ecc"]
+	path = deps/ecc
+	url = https://github.com/affaan-m/ECC

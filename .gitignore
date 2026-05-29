@@ -1,0 +1,6 @@
+# agentkit repo — nothing build-generated to track yet.
+# When deployed into a project, these are created in the TARGET project, not here:
+#   .claude/   CLAUDE.md   CLAUDE.md.agentkit   openspec/
+.DS_Store
+*.log
+node_modules/

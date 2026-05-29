@@ -1,0 +1,14 @@
+agentkit 0.1.0
+
+Vendored sources (all MIT — see ATTRIBUTIONS.md):
+  ECC        affaan-m/ECC          @ 64cd1ba248e77e377e76f70fc4e6434bfdddd511  (cloned 2026-05-29)
+  Karpathy   multica-ai/andrej-karpathy-skills   (4 principles, embedded in CLAUDE.md)
+  OpenSpec   @fission-ai/openspec  (installed at deploy time via npm, channel: @latest)
+
+Curated footprint (Python / FastAPI / RAG-MLOps):
+  agents:   14
+  skills:   26
+  rules:    common (10) + python (6)
+  commands: 9
+  contexts: 3
+  hooks:    none vendored (see docs/HOOKS.md)
