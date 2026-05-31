@@ -50,9 +50,44 @@ signals) with their resolver and script tree intact.
 > project `.claude/` (or vice-versa). Don't run both the plugin **and** ECC's
 > `install.sh --profile full` — that double-install is ECC's most common breakage.
 
-## If you really want a minimal home-grown memory hook
+## A minimal home-grown memory hook (opt-in, shipped as a template)
 
-Simplest reliable version: a `SessionEnd` hook that appends a short summary to
-`./.agent-memory.md`, and a `SessionStart` hook that prints the last N lines back. ~30 lines
-of Node, no dependencies, no resolver. Ask and it can be added as a clearly-scoped,
-self-contained extra — but it is deliberately not part of the default kit.
+agentkit ships one tiny, dependency-free hook as a **template** — not wired by default,
+because hooks stay opt-in: `payload/templates/memory-hook/agentkit-memory-start.sh`. It is a
+`SessionStart` hook that injects the most recent `.agent-memory.md` entry into context, so a
+new session opens already knowing where you left off — no need to type 「繼續」.
+
+> **Why only SessionStart (the read side)?** A `SessionEnd` hook *cannot* write a useful
+> summary: it is a plain script that receives the raw transcript path, and summarizing a
+> conversation needs the model, not `awk`. Claude Code also documents that SessionEnd hooks
+> cannot add context. So the **write** stays where it belongs — with Claude, on 「收工」 /
+> `/checkpoint` (CLAUDE.md §7). The hook only automates the **read**, which a script can do.
+
+### Wire it (per project)
+
+1. Copy the script into the project and make it executable:
+   ```bash
+   mkdir -p .claude/hooks
+   cp ~/.agentkit/payload/templates/memory-hook/agentkit-memory-start.sh .claude/hooks/
+   chmod +x .claude/hooks/agentkit-memory-start.sh
+   ```
+2. Register it — add this to `.claude/settings.json` (committed, team-wide) or
+   `.claude/settings.local.json` (personal, matching `.agent-memory.md` being git-ignored):
+   ```json
+   {
+     "hooks": {
+       "SessionStart": [
+         {
+           "matcher": "startup|resume",
+           "hooks": [
+             { "type": "command",
+               "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/agentkit-memory-start.sh" }
+           ]
+         }
+       ]
+     }
+   }
+   ```
+   If a `hooks` key already exists, merge the `SessionStart` array rather than overwriting it.
+
+That's the whole thing — ~12 lines of bash, no Node, no dependencies, no plugin resolver.
