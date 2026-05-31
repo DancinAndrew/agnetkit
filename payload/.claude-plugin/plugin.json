@@ -9,8 +9,6 @@
   "repository": "https://github.com/DancinAndrew/agnetkit",
   "license": "MIT",
   "keywords": ["python", "fastapi", "rag", "mlops", "tdd", "code-review", "workflow"],
-  "agents": "./.claude/agents/",
   "skills": "./.claude/skills/",
-  "commands": "./.claude/commands/",
   "outputStyles": "./.claude/output-styles/"
 }
