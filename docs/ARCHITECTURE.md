@@ -33,7 +33,7 @@ So agentkit vendors a **Python / FastAPI / RAG-MLOps** slice only.
 `build-error-resolver`, `refactor-cleaner`, `doc-updater`, `docs-lookup`,
 `silent-failure-hunter`.
 
-### Skills kept (26)
+### Skills kept (28)
 Workflow: `tdd-workflow`, `search-first`, `security-review`, `verification-loop`,
 `eval-harness`, `continuous-learning-v2`, `deep-research`, `iterative-retrieval`,
 `context-budget`, `error-handling`, `git-workflow`, `architecture-decision-records`.
@@ -42,6 +42,7 @@ Python/backend: `python-patterns`, `python-testing`, `fastapi-patterns`,
 `docker-patterns`, `deployment-patterns`.
 RAG/LLM/ML: `mle-workflow`, `cost-aware-llm-pipeline`, `regex-vs-llm-structured-text`,
 `mcp-server-patterns`, `content-hash-cache-pattern`.
+Learning: `grill-me`, `quiz-me`.
 
 ### Rules kept
 `rules/common/` (all 10) + `rules/python/` (all 6, incl. `fastapi.md`). No other language
@@ -77,6 +78,10 @@ on-demand reference. If you find duplication too heavy, trim the §5 import list
 - `.claude/commands/*.md` — discovered as slash commands.
 - `.claude/contexts/*.md` — manual: paste/reference when you want a dev/review/research mode.
 - `.claude/mcp-configs/mcp-servers.json` — reference; wire into your MCP client manually.
+- `.claude/settings.json` — auto-loaded by Claude Code; its `permissions.allow/deny` rules
+  are enforced by the harness (not the model), so they back the prose in `rules/common/
+  security.md` with an actual boundary. Re-running `install.sh` never clobbers an existing
+  one — it writes `settings.json.agentkit` for you to merge. Secrets → `settings.local.json`.
 
 If a harness doesn't support `@`-imports, the rules still live on disk as reference and can
 be pointed at explicitly.

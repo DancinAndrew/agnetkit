@@ -191,3 +191,49 @@ Claude 預設沒有跨 session 記憶。用這個約定補上：
 | `sysdoc/RUNBOOK.md` | 改了 env var、啟動步驟、部署流程 |
 
 更新時機：每次 `/opsx:archive` 之後，確認 sysdoc 有沒有需要跟著改。
+
+---
+
+## 權限 — `.claude/settings.json`
+
+由 Claude Code **harness 強制執行**（不是靠 model 自律），把 `rules/common/security.md` 的散文規則變成真的邊界。評估順序 `deny → ask → allow`，**deny 永遠贏**。
+
+| 類別 | 內容 |
+|------|------|
+| **auto-allow**（不再彈窗） | `uv run pytest/ruff/mypy/coverage`、`pytest`/`ruff`/`mypy`、`pre-commit run`、`git add/commit/switch/checkout/restore/stash/fetch/pull`、`gh search/pr/issue/run view`、`openspec`、`rg` |
+| **deny**（直接擋掉） | 讀 `**/.env`、`secrets/`、`*.pem`、`*.key`、`~/.ssh`、`~/.aws`；`rm -rf`；`git push --force`/`-f` |
+| **維持提示**（刻意不放行） | `git push`（對外動作）、`alembic upgrade`、`docker compose`、一般 `rm` |
+
+- `ls/cat/grep/find/rg` 等唯讀指令 Claude Code **內建免提示**，不必列在 allow。
+- `Read(**/.env)` 也會擋掉 Bash 裡的 `cat .env`；但不匹配 `.env.example`（範例檔仍可讀）。
+- **secrets 永遠放 `settings.local.json`**（不進 git），不要寫進提交的 `settings.json`。
+- 重跑 `install.sh` 不會洗掉你的 `settings.json`——已存在時會另寫 `settings.json.agentkit` 讓你手動合併（`--force` 才覆蓋）。
+
+---
+
+## Statusline（opt-in，零依賴）
+
+`templates/statusline/agentkit-statusline.py` 顯示 `[model] 📁 dir | 🌿 branch | ▓▓░ ctx% | $cost`（context 顏色綠→黃→紅）。純 stdlib，不用 jq/npm。**不自動接上**——免得蓋掉你已裝的 statusline。手動 wire：
+
+```bash
+mkdir -p .claude
+cp ~/.agentkit/payload/templates/statusline/agentkit-statusline.py .claude/
+chmod +x .claude/agentkit-statusline.py
+```
+然後在 `.claude/settings.json` 加：
+```json
+{ "statusLine": { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/agentkit-statusline.py", "padding": 1 } }
+```
+> 測試：`echo '{"model":{"display_name":"Opus"},"workspace":{"current_dir":"/x/proj"},"context_window":{"used_percentage":25}}' | .claude/agentkit-statusline.py`
+
+---
+
+## Output style — mentor mode
+
+| 選項 | 怎麼用 | 何時 |
+|------|--------|------|
+| **agentkit Mentor**（自訂） | `/config` → Output style 選它 | 要 §8 特有格式（Why / Architecture note / Alternative / Worth studying + quiz-me） |
+| **Explanatory**（內建） | `/config` 或 settings `"outputStyle": "Explanatory"` | 只要泛用教學 Insights |
+| **Learning**（內建） | 同上選 Learning | 邊做邊學，Claude 會放 `TODO(human)` 讓你補 code |
+
+> `.claude/output-styles/agentkit-mentor.md` 裝好但**預設不啟用**，要 `/config` 選。切換後 `/clear` 或新 session 才生效（output style 是 system prompt 的一部分）。§8 是 always-on 散文，這個 style 是可切換的固化版——重疊但用途不同。

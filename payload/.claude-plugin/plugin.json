@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "agentkit",
+  "displayName": "agentkit (execution layer)",
+  "version": "0.1.0",
+  "description": "Execution layer only: 14 agents, 28 skills, 9 commands, and the mentor output-style. The CLAUDE.md contract, .claude/rules, permissions, and the spec (openspec) / sysdoc layers are NOT shipped here — run install.sh for the full 4-layer kit. See docs/PLUGIN.md.",
+  "author": { "name": "DancinAndrew" },
+  "homepage": "https://github.com/DancinAndrew/agnetkit",
+  "repository": "https://github.com/DancinAndrew/agnetkit",
+  "license": "MIT",
+  "keywords": ["python", "fastapi", "rag", "mlops", "tdd", "code-review", "workflow"],
+  "agents": "./.claude/agents/",
+  "skills": "./.claude/skills/",
+  "commands": "./.claude/commands/",
+  "outputStyles": "./.claude/output-styles/"
+}

@@ -34,10 +34,25 @@ Install once for every project on the machine instead:
 ~/.agentkit/install.sh --scope global
 ```
 
-Options: `--scope project|global` · `--target DIR` · `--no-openspec` · `--force`.
-Re-running is safe (idempotent); an existing `CLAUDE.md` is never overwritten unless `--force`.
+Options: `--scope project|global` · `--target DIR` · `--ci` · `--no-openspec` · `--no-sysdoc` · `--force`.
+Re-running is safe (idempotent); existing `CLAUDE.md` / `settings.json` / CI files are never
+overwritten unless `--force`. `--ci` is opt-in (off by default) — see below.
 
 **Requirements:** Node 20.19+ (for OpenSpec). The ECC layer needs nothing — it's vendored.
+
+## Install as a plugin (execution layer only)
+
+Prefer `/plugin`? agentkit ships a `.claude-plugin/` manifest that packages the **execution
+layer** — agents, skills, commands, and the mentor output-style:
+
+```text
+/plugin marketplace add DancinAndrew/agnetkit
+/plugin install agentkit@agentkit
+```
+
+This is **not** the full kit: the `CLAUDE.md` contract, `.claude/rules`, permissions, and the
+spec/sysdoc layers structurally can't live in a plugin — run `install.sh` for those. Full
+rationale and the plugin-vs-install.sh decision: `docs/PLUGIN.md`.
 
 ## What you get
 
@@ -51,6 +66,19 @@ Re-running is safe (idempotent); an existing `CLAUDE.md` is never overwritten un
   continuous-learning-v2, grill-me, quiz-me, …).
 - `.claude/rules/` — `common/` (10) + `python/` (6) always-follow rules.
 - `.claude/commands/` — 9 convenience slash entries.
+- `.claude/output-styles/agentkit-mentor.md` — a switchable mentor mode that formalizes
+  CLAUDE.md §8 (Why / Architecture note / Alternative / Worth studying + quiz-me). Installed
+  but inactive until you pick it in `/config`. (Claude Code's built-in Explanatory/Learning
+  styles cover the generic case.)
+- `.claude/settings.json` — a permission allow/deny template tuned to the Python/FastAPI
+  inner loop: pytest/ruff/mypy/uv/git-write/gh/openspec auto-allowed; secrets, `rm -rf`,
+  and force-push denied. Secrets and machine-specific overrides go in `settings.local.json`.
+- `templates/ci/` — opt-in CI scaffolding (`--ci`): a `.pre-commit-config.yaml` (hygiene +
+  ruff) and a uv-based `.github/workflows/ci.yml` that runs ruff + mypy + pytest with an
+  `--cov-fail-under=80` gate. Off by default — it shapes the whole repo, so you ask for it.
+- `templates/statusline/` — an opt-in, zero-dependency Python status line (model · dir · git
+  branch · context% · cost). Wire it manually so it never clobbers an existing status line;
+  see `docs/CHEATSHEET.md`.
 - `openspec/` — spec workspace scaffolded by `openspec init`.
 - `sysdoc/` — system documentation scaffolded by agentkit: `OVERVIEW.md`, `ARCHITECTURE.md`, `RUNBOOK.md`.
 
@@ -67,4 +95,5 @@ Full detail: `docs/WORKFLOW.md`.
 - `docs/CHEATSHEET.md` — skills, agents, and commands quick reference.
 - `docs/UPDATING.md` — how to re-sync the vendored ECC subset to a newer commit.
 - `docs/HOOKS.md` — why hooks aren't vendored, and how to add ECC's natively if you want them.
+- `docs/PLUGIN.md` — installing the execution layer via `/plugin`, and why the contract can't be one.
 - `ATTRIBUTIONS.md` — licenses (ECC, Karpathy, OpenSpec — all MIT).
