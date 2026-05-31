@@ -1,0 +1,20 @@
+{
+  "name": "agentkit",
+  "owner": { "name": "DancinAndrew" },
+  "metadata": {
+    "description": "agentkit execution layer for Claude Code — Python / FastAPI / RAG-MLOps",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "agentkit",
+      "source": "./payload",
+      "description": "Execution layer: 14 agents, 28 skills, 9 commands, mentor output-style. Run install.sh for the full kit — contract (CLAUDE.md), rules, permissions, spec (openspec), sysdoc.",
+      "version": "0.1.0",
+      "author": { "name": "DancinAndrew" },
+      "license": "MIT",
+      "keywords": ["python", "fastapi", "rag", "mlops"],
+      "category": "workflow"
+    }
+  ]
+}

@@ -40,6 +40,20 @@ overwritten unless `--force`. `--ci` is opt-in (off by default) — see below.
 
 **Requirements:** Node 20.19+ (for OpenSpec). The ECC layer needs nothing — it's vendored.
 
+## Install as a plugin (execution layer only)
+
+Prefer `/plugin`? agentkit ships a `.claude-plugin/` manifest that packages the **execution
+layer** — agents, skills, commands, and the mentor output-style:
+
+```text
+/plugin marketplace add DancinAndrew/agnetkit
+/plugin install agentkit@agentkit
+```
+
+This is **not** the full kit: the `CLAUDE.md` contract, `.claude/rules`, permissions, and the
+spec/sysdoc layers structurally can't live in a plugin — run `install.sh` for those. Full
+rationale and the plugin-vs-install.sh decision: `docs/PLUGIN.md`.
+
 ## What you get
 
 - `CLAUDE.md` — the operating contract: 4 principles + routing (spec-first vs fast-path)
@@ -81,4 +95,5 @@ Full detail: `docs/WORKFLOW.md`.
 - `docs/CHEATSHEET.md` — skills, agents, and commands quick reference.
 - `docs/UPDATING.md` — how to re-sync the vendored ECC subset to a newer commit.
 - `docs/HOOKS.md` — why hooks aren't vendored, and how to add ECC's natively if you want them.
+- `docs/PLUGIN.md` — installing the execution layer via `/plugin`, and why the contract can't be one.
 - `ATTRIBUTIONS.md` — licenses (ECC, Karpathy, OpenSpec — all MIT).
