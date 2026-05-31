@@ -52,12 +52,19 @@ overwritten unless `--force`. `--ci` is opt-in (off by default) — see below.
   continuous-learning-v2, grill-me, quiz-me, …).
 - `.claude/rules/` — `common/` (10) + `python/` (6) always-follow rules.
 - `.claude/commands/` — 9 convenience slash entries.
+- `.claude/output-styles/agentkit-mentor.md` — a switchable mentor mode that formalizes
+  CLAUDE.md §8 (Why / Architecture note / Alternative / Worth studying + quiz-me). Installed
+  but inactive until you pick it in `/config`. (Claude Code's built-in Explanatory/Learning
+  styles cover the generic case.)
 - `.claude/settings.json` — a permission allow/deny template tuned to the Python/FastAPI
   inner loop: pytest/ruff/mypy/uv/git-write/gh/openspec auto-allowed; secrets, `rm -rf`,
   and force-push denied. Secrets and machine-specific overrides go in `settings.local.json`.
 - `templates/ci/` — opt-in CI scaffolding (`--ci`): a `.pre-commit-config.yaml` (hygiene +
   ruff) and a uv-based `.github/workflows/ci.yml` that runs ruff + mypy + pytest with an
   `--cov-fail-under=80` gate. Off by default — it shapes the whole repo, so you ask for it.
+- `templates/statusline/` — an opt-in, zero-dependency Python status line (model · dir · git
+  branch · context% · cost). Wire it manually so it never clobbers an existing status line;
+  see `docs/CHEATSHEET.md`.
 - `openspec/` — spec workspace scaffolded by `openspec init`.
 - `sysdoc/` — system documentation scaffolded by agentkit: `OVERVIEW.md`, `ARCHITECTURE.md`, `RUNBOOK.md`.
 
