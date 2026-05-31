@@ -113,22 +113,52 @@
 
 ---
 
-## 標準開發流程
+## 標準開發流程（整合版）
+
+照這棵決策樹走，不用每次煩惱用哪個工具：
 
 ```
-/plan "xxx"
-  → /tdd-workflow  (RED → GREEN → REFACTOR)
-  → code-reviewer + security-reviewer
-  → /verification-loop
-  → /checkpoint
-  → /learn  ← 萃取可複用模式
+0. 想法在你腦袋裡還很糊？
+   → grill-me            (一次一題逼到零模糊，選用)
+        │
+1. 這個改動多大？
+   ├── 大 (新功能 / 碰 auth,money,DB / 跨檔 / 改外部行為) ── spec-first
+   │      → /opsx:propose → 審 proposal+design+tasks.md → 跟人對齊
+   │        (tasks.md 就是你的 plan，不要再 /plan)
+   │
+   └── 小 (typo / 一行 / 明確的局部改) ─────────────────── fast-path
+          → /plan (想要步驟就用) 或直接跳下一步
+        │
+2. ══ 每個 task 跑這個迴圈 ══
+   search-first          (動手前先查既有方案)
+   → /tdd-workflow       (RED：把 spec scenario 寫成失敗測試 → GREEN → REFACTOR)
+   → code-reviewer + security-reviewer (+ python/fastapi/db/mle 看情況)
+   → /verification-loop  (loop 到成功標準全綠)
+   → /checkpoint         (寫進 .agent-memory.md)
+        │
+3. update sysdoc/        (系統形狀變了才要)
+        │
+4. /opsx:archive         (只有 spec-first 要，把 spec 收回對帳)
+        │
+5. quiz-me               (考自己懂不懂剛做的東西，選用——學習用)
+   /learn                (萃取可複用 pattern，選用)
 ```
 
-**spec-first**（新功能 / 跨檔 / 碰 auth / DB schema）：
+### 心法三條（背這個就好）
 
-```
-/opsx:propose → 審 proposal.md + design.md + tasks.md → 實作 → /opsx:archive
-```
+1. **腦袋糊 → `grill-me`**（任何 lane 都可先做）
+2. **大改動 → `/opsx:propose`；小改動 → `/plan`。二選一，不要兩個都跑**
+3. **RED 測試從 spec 的 scenario 來** ← 這就是防止「實作跟 spec 跑掉」的機制
+
+### grill-me / /plan / /opsx:propose 到底差在哪
+
+| 工具 | 做什麼 | 產出 | 何時 |
+|------|--------|------|------|
+| `grill-me` | 逼出你腦袋裡模糊的想法 | 想清楚（summary） | 自己都還沒想清楚 |
+| `/opsx:propose` | 寫成正式契約 | proposal/design/tasks.md（存檔、archive） | 大改動 |
+| `/plan` | 快速列實作步驟 + 風險 | 對話裡的 checklist（不存檔） | 小到中改動 |
+
+> `/plan` 和 `/opsx:propose` 是**同一件事的輕重版**，二選一。`grill-me` 在它們**之前**，是前置不是替代。
 
 ---
 

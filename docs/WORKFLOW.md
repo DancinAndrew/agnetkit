@@ -5,6 +5,11 @@ agentkit runs two systems in sequence. OpenSpec owns **what/why** (the spec). EC
 
 ```
             ┌─────────────────────────────────────────────────────────┐
+            │  Is the idea still fuzzy in YOUR head?                    │
+            │  yes → grill-me  (interview to zero ambiguity)  [opt]     │
+            └───────────────────────────┬─────────────────────────────┘
+                                        ▼
+            ┌─────────────────────────────────────────────────────────┐
             │  Is this change non-trivial? (see decision rule below)    │
             └───────────────┬───────────────────────────┬─────────────┘
                        yes  │                       no   │
@@ -12,25 +17,29 @@ agentkit runs two systems in sequence. OpenSpec owns **what/why** (the spec). EC
                    ┌─────────────────┐          ┌──────────────────┐
                    │  OpenSpec lane  │          │  Fast-path lane  │
                    └────────┬────────┘          └────────┬─────────┘
-   /opsx:propose "<idea>"   │                            │
-   → proposal.md            │                            │
+   /opsx:propose "<idea>"   │             /plan (optional, light) or
+   → proposal.md            │             straight to TDD          │
    → design.md              │                            │
-   → tasks.md               │                            │
-   review with human  ◀─────┘                            │
+   → tasks.md  (THIS is the │                            │
+   review with human  ◀──── plan — don't also /plan)     │
                             │                            │
                             ▼                            ▼
                    ════════════ ECC execution loop (per task) ════════════
                    1. search-first   (research before code)
-                   2. tdd-workflow   (RED → GREEN → REFACTOR, ≥80% changed-line cov)
+                   2. tdd-workflow   (RED = a spec scenario as a failing test
+                                      → GREEN → REFACTOR, ≥80% changed-line cov)
                    3. reviewer agents (code / security / python / fastapi / mle / db)
                    4. verification-loop / eval-harness (loop until criteria met)
                    ══════════════════════════════════════════════════════
                             │
                             ▼
+                   update sysdoc/  (if system shape changed — see CLAUDE.md §3.5)
+                            │
+                            ▼
                    /opsx:archive   (spec-first lane only — fold specs back)
                             │
                             ▼
-                   update sysdoc/  (if system shape changed — see CLAUDE.md §3.5)
+                   quiz-me   (lock in understanding of what was built)  [opt]
 ```
 
 ## Decision rule — which lane?
@@ -64,9 +73,48 @@ Hand-off point: **`tasks.md` is the contract.** OpenSpec produces it; ECC consum
 item at a time. Don't let ECC re-open scope questions that belong in the proposal, and
 don't let OpenSpec specify implementation detail that belongs in TDD.
 
+## Three tools live "before code" — which one?
+
+`grill-me`, `/plan`, and `/opsx:propose` all happen before you write code, so they look
+redundant. They are not — they produce different things:
+
+| Tool | Produces | Persisted? | Use when |
+|------|----------|------------|----------|
+| `grill-me` | clarity (a summary) | no | the idea is still fuzzy *in your own head* |
+| `/opsx:propose` | `proposal/design/tasks.md` | yes (archived) | non-trivial change (spec-first lane) |
+| `/plan` | an in-conversation checklist | no | small/medium change, want steps without the ceremony |
+
+**The rule that removes the confusion:**
+
+- `/plan` and `/opsx:propose` are the **same activity at two weights — pick ONE, never both.**
+  In the spec-first lane, `tasks.md` *is* your plan; running `/plan` on top of it is planning
+  twice. In the fast-path lane, `/plan` is the lightweight option (or skip straight to TDD).
+- `grill-me` sits **before** either. It's a pre-step, not a substitute: it turns "I sort of
+  know what I want" into something concrete enough to write down. Clear head? Skip it.
+
+## "Will opsx:propose → tdd-workflow let the spec drift?"
+
+No — *if* you respect the causal chain that ties them together:
+
+```
+spec scenarios  →  become your RED tests  →  tests drive the code
+```
+
+The `specs/` directory in an OpenSpec change holds requirements **and scenarios**. Your
+first TDD step (RED) is to encode one of those scenarios as a failing test. So the code
+isn't running *parallel* to the spec (free to diverge) — it's pulled along *by* the spec,
+through the tests. One chain, not two parallel tracks.
+
+The only thing that actually causes drift: discovering mid-implementation that the spec was
+wrong or incomplete, and then **silently coding around it.** Don't. The correct move is to
+go back and amend the proposal, then let `/opsx:archive` reconcile the final spec with what
+was actually built. Spec doesn't drift on its own — *you* drift it by bypassing it.
+
 ## Worked example (spec-first)
 
 ```
+grill-me                  → (idea was fuzzy) one-at-a-time questions surface the
+                            double-charge race, the retry semantics, the key TTL
 /opsx:propose "add idempotent ticket purchase endpoint"
   → review proposal.md (why: double-charge bug), design.md (idempotency key in Redis),
     tasks.md (1. schema, 2. endpoint, 3. concurrency test, 4. docs)
@@ -86,6 +134,7 @@ verification-loop       → all tasks' success criteria green
 sysdoc/ARCHITECTURE.md  → record the idempotency-key decision + tradeoffs
 sysdoc/RUNBOOK.md       → add the new env vars (REDIS_URL, IDEMPOTENCY_TTL)
 sysdoc/OVERVIEW.md      → note the new "Payments" component in the component table
+quiz-me                 → (optional) test your grasp: "why does the key need a TTL?"
 ```
 
 ## Worked example (fast-path)

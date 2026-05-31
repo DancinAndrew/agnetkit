@@ -81,7 +81,13 @@ human → implement each task through the execution loop below → `/opsx:archiv
 > `/plan` or `/opsx:propose`. Cheapest place to catch a wrong design is before any code.
 
 **Fast-path (skip OpenSpec)** for: typos, comments, formatting, one-line fixes, and
-obviously-scoped local changes. Still write a failing test first if behavior changes.
+obviously-scoped local changes. Use `/plan` if you want a quick step/risk list, or go
+straight to TDD. Still write a failing test first if behavior changes.
+
+> **`/plan` and `/opsx:propose` are the same activity at two weights — pick ONE, never
+> both.** Spec-first lane: `tasks.md` *is* your plan, so don't also `/plan`. Fast-path
+> lane: `/plan` is the light option. `grill-me` sits *before* either — a pre-step to get
+> clear, not a substitute. (Full rationale + the anti-spec-drift rule: `docs/WORKFLOW.md`.)
 
 > Unsure which lane? It's spec-first. (Principle 1.1.)
 
