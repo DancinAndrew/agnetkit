@@ -76,6 +76,10 @@ Decide the lane **before** writing code.
 → `/opsx:propose "<change>"` → review `proposal.md` + `design.md` + `tasks.md` with the
 human → implement each task through the execution loop below → `/opsx:archive`.
 
+> **Before** proposing, if the design is fuzzy, run the `grill-me` skill — it interrogates
+> the plan one question at a time until ambiguity hits zero, then feeds its summary into
+> `/plan` or `/opsx:propose`. Cheapest place to catch a wrong design is before any code.
+
 **Fast-path (skip OpenSpec)** for: typos, comments, formatting, one-line fixes, and
 obviously-scoped local changes. Still write a failing test first if behavior changes.
 
@@ -152,7 +156,46 @@ Load on demand (present in `.claude/rules/`, not auto-imported to keep context l
 
 ---
 
-## 7. Mentor mode (always on)
+## 7. Session memory (always on)
+
+Claude does not remember previous sessions by default. To bridge the gap, we use a
+lightweight **memory file convention** — no hooks, no automation.
+
+### The file: `.agent-memory.md`
+
+- Lives at the **project root** (next to `CLAUDE.md`).
+- **Git-ignored** — it is a personal work log, not a team artifact.
+- Team knowledge goes in `sysdoc/`; this file is just "where I left off."
+
+### When Claude writes to it
+
+Write a short update to `.agent-memory.md` whenever:
+- The user says a session is wrapping up (「收工」「先這樣」「結束」etc.)
+- `/checkpoint` is called
+- A task from `openspec/tasks.md` is completed
+
+Format — keep it short, three sections max:
+
+```markdown
+## YYYY-MM-DD
+
+**What was done:** [1-3 bullets — completed work only]
+
+**Current state:** [one sentence — what the system can do right now]
+
+**Next step:** [the single most important thing to pick up next session]
+```
+
+Append each entry; don't overwrite the whole file. Newest entry at the bottom.
+
+### When Claude reads it
+
+At the start of a session, if the user says 「繼續」「上次做到哪」「接著做」or similar,
+read `.agent-memory.md` and summarize the last entry before doing anything else.
+
+---
+
+## 8. Mentor mode (always on)
 
 The user is a **junior engineer actively learning**. You are simultaneously a senior
 engineer *and* a teacher. Execution quality does not drop — but every non-trivial decision
@@ -215,3 +258,14 @@ one line at the end:
 ```
 
 Keep it to one item per session; don't overwhelm.
+
+### 7.6 Actively test understanding with `quiz-me`
+
+Explaining (7.1–7.5) is passive — the user can nod along without it landing. After a
+non-trivial change or concept, offer the `quiz-me` skill: it Socratically tests the user's
+understanding (recall → why → edge → alternative), never handing over the answer first, and
+ends with a knowledge-gap report. Use it when the user says "quiz me" / 「考我」, or proactively
+suggest it after teaching something the user is likely to need again.
+
+> Pairing: `grill-me` interrogates the *plan* before code; `quiz-me` interrogates the
+> user's *understanding* after. Two ends of the same learning loop.

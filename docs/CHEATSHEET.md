@@ -72,6 +72,15 @@
 | `cost-aware-llm-pipeline` | LLM 成本優化、model routing、prompt caching |
 | `content-hash-cache-pattern` | 用 SHA-256 cache 昂貴的檔案處理結果 |
 
+### 學習 & 拷問（grill 雙人組）
+
+| Skill | 何時用 |
+|-------|--------|
+| `grill-me` | **寫 code 前** 拷問你的設計，一次一題逼到零模糊，再餵給 `/plan`、OpenSpec |
+| `quiz-me` | **學習時** 蘇格拉底式考你對某段 code/概念的理解，只問不答，找出你的盲點 |
+
+> 口訣：`grill-me` 問你的**計畫**、`quiz-me` 問你的**理解**——開發迴圈的兩端。
+
 ### 其他
 
 | Skill | 何時用 |
@@ -120,6 +129,20 @@
 ```
 /opsx:propose → 審 proposal.md + design.md + tasks.md → 實作 → /opsx:archive
 ```
+
+---
+
+## 跨 session 記憶
+
+Claude 預設沒有跨 session 記憶。用這個約定補上：
+
+| 動作 | 效果 |
+|------|------|
+| 說「收工」「先這樣」「結束」 | Claude 把進度寫進 `.agent-memory.md` |
+| 說「繼續」「上次做到哪」 | Claude 讀取最後一筆記錄，摘要給你聽 |
+| `/checkpoint` | 也會觸發寫入 |
+
+`.agent-memory.md` 在 git-ignored，是你個人的，不會進 repo。
 
 ---
 

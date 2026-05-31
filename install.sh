@@ -57,6 +57,18 @@ mkdir -p "$CLAUDE_DIR"
 # Merge-copy the vendored .claude payload (does not wipe existing user files).
 cp -R "$PAYLOAD/." "$CLAUDE_DIR/"
 
+# Ensure .agent-memory.md is git-ignored in the target project.
+TARGET_GITIGNORE="$TARGET/.gitignore"
+if [ -f "$TARGET_GITIGNORE" ]; then
+  if ! grep -q '\.agent-memory\.md' "$TARGET_GITIGNORE"; then
+    printf '\n# agentkit session memory — personal work log, never commit.\n.agent-memory.md\n' >> "$TARGET_GITIGNORE"
+    echo "[agentkit] added .agent-memory.md to $TARGET_GITIGNORE"
+  fi
+else
+  printf '# agentkit session memory — personal work log, never commit.\n.agent-memory.md\n' > "$TARGET_GITIGNORE"
+  echo "[agentkit] created $TARGET_GITIGNORE with .agent-memory.md"
+fi
+
 # Place the operating contract (CLAUDE.md) without clobbering an existing one.
 DEST_CONTRACT="$TARGET/CLAUDE.md"
 if [ -f "$DEST_CONTRACT" ] && [ "$FORCE" -eq 0 ]; then

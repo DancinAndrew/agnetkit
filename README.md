@@ -46,9 +46,9 @@ Re-running is safe (idempotent); an existing `CLAUDE.md` is never overwritten un
 - `.claude/agents/` — 14 subagents (planner, architect, tdd-guide, code/security/python/
   fastapi/database/mle reviewers, build-error-resolver, refactor-cleaner, doc-updater,
   docs-lookup, silent-failure-hunter).
-- `.claude/skills/` — 26 skills (tdd-workflow, search-first, verification-loop,
+- `.claude/skills/` — 28 skills (tdd-workflow, search-first, verification-loop,
   eval-harness, fastapi/backend/api/db patterns, mle-workflow, cost-aware-llm-pipeline,
-  continuous-learning-v2, …).
+  continuous-learning-v2, grill-me, quiz-me, …).
 - `.claude/rules/` — `common/` (10) + `python/` (6) always-follow rules.
 - `.claude/commands/` — 9 convenience slash entries.
 - `openspec/` — spec workspace scaffolded by `openspec init`.

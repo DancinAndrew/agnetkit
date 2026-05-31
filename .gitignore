@@ -1,6 +1,10 @@
 # agentkit repo — nothing build-generated to track yet.
 # When deployed into a project, these are created in the TARGET project, not here:
-#   .claude/   CLAUDE.md   CLAUDE.md.agentkit   openspec/
+#   .claude/   CLAUDE.md   CLAUDE.md.agentkit   openspec/   sysdoc/
 .DS_Store
 *.log
 node_modules/
+
+# Session memory file — personal work log, not a team artifact.
+# Each developer has their own; it is never committed.
+.agent-memory.md

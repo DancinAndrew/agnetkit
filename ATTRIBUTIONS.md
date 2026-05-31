@@ -1,6 +1,6 @@
 # Attributions
 
-agentkit vendors and adapts work from three MIT-licensed projects. Their license terms
+agentkit vendors and adapts work from four MIT-licensed projects. Their license terms
 are preserved. agentkit itself is MIT (see `LICENSE`, if added).
 
 ## ECC — `affaan-m/ECC`
@@ -21,6 +21,13 @@ are preserved. agentkit itself is MIT (see `LICENSE`, if added).
 - How it is used: installed at deploy time via npm and scaffolded with `openspec init`.
   Not vendored — OpenSpec is a CLI and is meant to be installed, not copied.
 
+## grill-me concept — Matt Pocock (`mattpocock/skills`)
+- License: MIT.
+- What is used: the `grill-me` skill (`payload/.claude/skills/grill-me/`) is an
+  independent reimplementation of the planning-interrogation pattern popularized by Matt
+  Pocock's grill-me skill. No code copied — the SKILL.md is original, written for agentkit.
+  The companion `quiz-me` skill is agentkit-original (the understanding-test counterpart).
+
 ---
 This is an independent integration and is not affiliated with or endorsed by the authors
-of ECC, the Karpathy guidelines, or OpenSpec.
+of ECC, the Karpathy guidelines, OpenSpec, or the grill-me skill.
