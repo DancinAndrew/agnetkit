@@ -191,3 +191,20 @@ Claude 預設沒有跨 session 記憶。用這個約定補上：
 | `sysdoc/RUNBOOK.md` | 改了 env var、啟動步驟、部署流程 |
 
 更新時機：每次 `/opsx:archive` 之後，確認 sysdoc 有沒有需要跟著改。
+
+---
+
+## 權限 — `.claude/settings.json`
+
+由 Claude Code **harness 強制執行**（不是靠 model 自律），把 `rules/common/security.md` 的散文規則變成真的邊界。評估順序 `deny → ask → allow`，**deny 永遠贏**。
+
+| 類別 | 內容 |
+|------|------|
+| **auto-allow**（不再彈窗） | `uv run pytest/ruff/mypy/coverage`、`pytest`/`ruff`/`mypy`、`pre-commit run`、`git add/commit/switch/checkout/restore/stash/fetch/pull`、`gh search/pr/issue/run view`、`openspec`、`rg` |
+| **deny**（直接擋掉） | 讀 `**/.env`、`secrets/`、`*.pem`、`*.key`、`~/.ssh`、`~/.aws`；`rm -rf`；`git push --force`/`-f` |
+| **維持提示**（刻意不放行） | `git push`（對外動作）、`alembic upgrade`、`docker compose`、一般 `rm` |
+
+- `ls/cat/grep/find/rg` 等唯讀指令 Claude Code **內建免提示**，不必列在 allow。
+- `Read(**/.env)` 也會擋掉 Bash 裡的 `cat .env`；但不匹配 `.env.example`（範例檔仍可讀）。
+- **secrets 永遠放 `settings.local.json`**（不進 git），不要寫進提交的 `settings.json`。
+- 重跑 `install.sh` 不會洗掉你的 `settings.json`——已存在時會另寫 `settings.json.agentkit` 讓你手動合併（`--force` 才覆蓋）。

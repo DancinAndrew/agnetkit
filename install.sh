@@ -54,8 +54,31 @@ echo "[agentkit] scope=$SCOPE  target=$TARGET"
 echo "[agentkit] installing execution layer -> $CLAUDE_DIR"
 
 mkdir -p "$CLAUDE_DIR"
+
+# Preserve an existing settings.json before the merge-copy — it holds the user's own
+# permissions, and a blind cp would clobber it. (CLAUDE.md gets the same no-clobber care below.)
+PRESERVE_SETTINGS=""
+if [ -f "$CLAUDE_DIR/settings.json" ]; then
+  PRESERVE_SETTINGS="$(mktemp)"
+  cp "$CLAUDE_DIR/settings.json" "$PRESERVE_SETTINGS"
+fi
+
 # Merge-copy the vendored .claude payload (does not wipe existing user files).
 cp -R "$PAYLOAD/." "$CLAUDE_DIR/"
+
+# Restore the user's settings.json if they had one; offer agentkit's as a .agentkit variant
+# to merge by hand. With --force, agentkit's copy (already placed by cp -R) wins instead.
+if [ -n "$PRESERVE_SETTINGS" ]; then
+  if [ "$FORCE" -eq 1 ]; then
+    echo "[agentkit] --force: replaced existing .claude/settings.json with agentkit's."
+  else
+    cp "$CLAUDE_DIR/settings.json" "$CLAUDE_DIR/settings.json.agentkit"
+    cp "$PRESERVE_SETTINGS" "$CLAUDE_DIR/settings.json"
+    echo "[agentkit] NOTE: kept your existing .claude/settings.json."
+    echo "[agentkit]       wrote .claude/settings.json.agentkit — merge the permissions you want."
+  fi
+  rm -f "$PRESERVE_SETTINGS"
+fi
 
 # Ensure .agent-memory.md is git-ignored in the target project.
 TARGET_GITIGNORE="$TARGET/.gitignore"
@@ -136,7 +159,7 @@ fi
 cat <<EOF
 
 [agentkit] done.
-  Execution layer : $CLAUDE_DIR  (agents, skills, rules, commands, contexts, mcp-configs)
+  Execution layer : $CLAUDE_DIR  (agents, skills, rules, commands, contexts, mcp-configs, settings.json)
   Contract        : $TARGET/CLAUDE.md
   Spec layer      : $SPEC_SUMMARY
   System docs     : $SYSDOC_SUMMARY
@@ -144,7 +167,9 @@ cat <<EOF
   Next:
     1. Skim CLAUDE.md and fill in section 6 (Project-specific).
     2. Fill in sysdoc/OVERVIEW.md with your system's name and main components.
-    3. Wire MCP servers from $CLAUDE_DIR/mcp-configs/mcp-servers.json into your client.
-    4. Start a change:  /opsx:propose "your first feature"
-    5. Hooks are intentionally NOT vendored — see docs/HOOKS.md for why and how to add ECC's natively.
+    3. Review .claude/settings.json — the permission allow/deny list. Tune it to your stack
+       (secrets go in .claude/settings.local.json, never the committed settings.json).
+    4. Wire MCP servers from $CLAUDE_DIR/mcp-configs/mcp-servers.json into your client.
+    5. Start a change:  /opsx:propose "your first feature"
+    6. Hooks are intentionally NOT vendored — see docs/HOOKS.md for why and how to add ECC's natively.
 EOF

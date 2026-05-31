@@ -51,6 +51,9 @@ Re-running is safe (idempotent); an existing `CLAUDE.md` is never overwritten un
   continuous-learning-v2, grill-me, quiz-me, …).
 - `.claude/rules/` — `common/` (10) + `python/` (6) always-follow rules.
 - `.claude/commands/` — 9 convenience slash entries.
+- `.claude/settings.json` — a permission allow/deny template tuned to the Python/FastAPI
+  inner loop: pytest/ruff/mypy/uv/git-write/gh/openspec auto-allowed; secrets, `rm -rf`,
+  and force-push denied. Secrets and machine-specific overrides go in `settings.local.json`.
 - `openspec/` — spec workspace scaffolded by `openspec init`.
 - `sysdoc/` — system documentation scaffolded by agentkit: `OVERVIEW.md`, `ARCHITECTURE.md`, `RUNBOOK.md`.
 
