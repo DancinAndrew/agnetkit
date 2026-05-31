@@ -34,8 +34,9 @@ Install once for every project on the machine instead:
 ~/.agentkit/install.sh --scope global
 ```
 
-Options: `--scope project|global` · `--target DIR` · `--no-openspec` · `--force`.
-Re-running is safe (idempotent); an existing `CLAUDE.md` is never overwritten unless `--force`.
+Options: `--scope project|global` · `--target DIR` · `--ci` · `--no-openspec` · `--no-sysdoc` · `--force`.
+Re-running is safe (idempotent); existing `CLAUDE.md` / `settings.json` / CI files are never
+overwritten unless `--force`. `--ci` is opt-in (off by default) — see below.
 
 **Requirements:** Node 20.19+ (for OpenSpec). The ECC layer needs nothing — it's vendored.
 
@@ -54,6 +55,9 @@ Re-running is safe (idempotent); an existing `CLAUDE.md` is never overwritten un
 - `.claude/settings.json` — a permission allow/deny template tuned to the Python/FastAPI
   inner loop: pytest/ruff/mypy/uv/git-write/gh/openspec auto-allowed; secrets, `rm -rf`,
   and force-push denied. Secrets and machine-specific overrides go in `settings.local.json`.
+- `templates/ci/` — opt-in CI scaffolding (`--ci`): a `.pre-commit-config.yaml` (hygiene +
+  ruff) and a uv-based `.github/workflows/ci.yml` that runs ruff + mypy + pytest with an
+  `--cov-fail-under=80` gate. Off by default — it shapes the whole repo, so you ask for it.
 - `openspec/` — spec workspace scaffolded by `openspec init`.
 - `sysdoc/` — system documentation scaffolded by agentkit: `OVERVIEW.md`, `ARCHITECTURE.md`, `RUNBOOK.md`.
 

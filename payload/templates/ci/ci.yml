@@ -1,0 +1,38 @@
+# agentkit CI template → place at .github/workflows/ci.yml
+# uv-based lint + type-check + test, with an 80% coverage gate (CLAUDE.md testing rule).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pinning these third-party actions to a commit SHA is the harder supply-chain option.
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install dependencies
+        run: uv sync --locked --all-extras --dev   # --locked: a stale lockfile fails CI
+
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Format check (ruff)
+        run: uv run ruff format --check .
+
+      - name: Type check (mypy)
+        run: uv run mypy .
+
+      - name: Test + coverage gate
+        run: uv run pytest --cov --cov-report=term-missing --cov-fail-under=80

@@ -2,13 +2,15 @@
 #
 # agentkit installer — deploy the layered AI dev workflow into a project (or globally).
 #
-#   ./install.sh [--scope project|global] [--target DIR] [--no-openspec] [--no-sysdoc] [--force]
+#   ./install.sh [--scope project|global] [--target DIR] [--ci] [--no-openspec] [--no-sysdoc] [--force]
 #
 #   --scope project   (default) install into a single project's ./.claude + ./CLAUDE.md
 #   --scope global    install into ~/.claude (applies to all projects on this machine)
 #   --target DIR      project root to install into (default: current directory)
 #   --no-openspec     skip installing the OpenSpec CLI and running `openspec init`
 #   --no-sysdoc       skip scaffolding the sysdoc/ system documentation directory
+#   --ci              also scaffold CI at the project root: .pre-commit-config.yaml +
+#                     .github/workflows/ci.yml (no-clobber; off by default)
 #   --force           overwrite an existing CLAUDE.md instead of writing CLAUDE.md.agentkit
 #
 # The ECC subset (agents/skills/rules/commands/contexts/mcp-configs) is vendored in this
@@ -25,6 +27,7 @@ SCOPE="project"
 TARGET="$(pwd)"
 DO_OPENSPEC=1
 DO_SYSDOC=1
+DO_CI=0
 FORCE=0
 
 while [ $# -gt 0 ]; do
@@ -33,8 +36,9 @@ while [ $# -gt 0 ]; do
     --target)     TARGET="${2:-}"; shift 2 ;;
     --no-openspec) DO_OPENSPEC=0; shift ;;
     --no-sysdoc)  DO_SYSDOC=0; shift ;;
+    --ci)         DO_CI=1; shift ;;
     --force)      FORCE=1; shift ;;
-    -h|--help)    sed -n '2,18p' "$0"; exit 0 ;;
+    -h|--help)    sed -n '2,20p' "$0"; exit 0 ;;
     *) echo "[agentkit] unknown option: $1" >&2; exit 2 ;;
   esac
 done
@@ -148,6 +152,33 @@ else
   SYSDOC_SUMMARY="skipped (--no-sysdoc)"
 fi
 
+# CI scaffolding (opt-in via --ci): pre-commit + GitHub Actions at the project root.
+# These shape the whole repo and assume uv + an 80% coverage gate, so they are never
+# placed unless asked, and never clobber files you already have.
+if [ "$DO_CI" -eq 1 ] && [ "$SCOPE" = "project" ]; then
+  CI_SRC="$SCRIPT_DIR/payload/templates/ci"
+  _place_ci() {  # $1=src  $2=dest  $3=label
+    mkdir -p "$(dirname "$2")"
+    if [ -f "$2" ] && [ "$FORCE" -eq 0 ]; then
+      cp "$1" "$2.agentkit"
+      echo "[agentkit] NOTE: $3 exists — wrote $2.agentkit to merge by hand."
+    else
+      cp "$1" "$2"
+      echo "[agentkit] wrote $3"
+    fi
+  }
+  _place_ci "$CI_SRC/.pre-commit-config.yaml" "$TARGET/.pre-commit-config.yaml" ".pre-commit-config.yaml"
+  _place_ci "$CI_SRC/ci.yml"                  "$TARGET/.github/workflows/ci.yml" ".github/workflows/ci.yml"
+  cp "$CI_SRC/pyproject-snippet.toml" "$TARGET/pyproject-agentkit-snippet.toml"
+  echo "[agentkit] wrote pyproject-agentkit-snippet.toml — merge its [tool.*] sections into pyproject.toml"
+  CI_SUMMARY=".pre-commit-config.yaml + .github/workflows/ci.yml"
+elif [ "$DO_CI" -eq 1 ]; then
+  echo "[agentkit] --ci writes project-root files — run install.sh with --ci inside a project."
+  CI_SUMMARY="skipped (global scope)"
+else
+  CI_SUMMARY="not installed — re-run with --ci, or copy from payload/templates/ci/"
+fi
+
 if [ "$DO_OPENSPEC" -eq 0 ]; then
   SPEC_SUMMARY="skipped (--no-openspec)"
 elif [ "$SCOPE" = "project" ]; then
@@ -163,6 +194,7 @@ cat <<EOF
   Contract        : $TARGET/CLAUDE.md
   Spec layer      : $SPEC_SUMMARY
   System docs     : $SYSDOC_SUMMARY
+  CI scaffolding  : $CI_SUMMARY
 
   Next:
     1. Skim CLAUDE.md and fill in section 6 (Project-specific).
@@ -172,4 +204,7 @@ cat <<EOF
     4. Wire MCP servers from $CLAUDE_DIR/mcp-configs/mcp-servers.json into your client.
     5. Start a change:  /opsx:propose "your first feature"
     6. Hooks are intentionally NOT vendored — see docs/HOOKS.md for why and how to add ECC's natively.
+
+  If you used --ci: merge pyproject-agentkit-snippet.toml into pyproject.toml, then
+  run 'uv run pre-commit install' once to enable the hooks.
 EOF

@@ -1,0 +1,21 @@
+# agentkit CI template — pre-commit hooks (hygiene + ruff).
+# Install once per clone:  uv run pre-commit install
+# mypy is intentionally NOT here — it needs the project's dependency environment,
+# which pre-commit's isolated venv doesn't have. It runs in CI (.github/workflows/ci.yml).
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key      # mirrors the secrets deny-list in .claude/settings.json
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.15
+    hooks:
+      - id: ruff-check              # lint first — --fix can rewrite code...
+        args: [--fix]
+      - id: ruff-format             # ...so format runs after
