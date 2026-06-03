@@ -3,6 +3,13 @@
 > Paste/merge this into Section 6 of your project's `CLAUDE.md`, then edit to match reality.
 > Keep it concrete and short — this is always-on context.
 
+## 語言
+
+所有輸出一律使用**繁體中文**，包括：
+- 對話回覆
+- 文件（README、docs/、sysdoc/ 等）的新增或修改內容
+- commit message、PR title/body **除外**（維持英文，符合 git 慣例）
+
 ## Stack
 - Language: Python 3.12+. Package/deps: `uv` (or Poetry — state which, don't mix).
 - API: FastAPI + Pydantic v2. ASGI server: uvicorn.
