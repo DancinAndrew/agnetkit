@@ -156,9 +156,12 @@ Load on demand (present in `.claude/rules/`, not auto-imported to keep context l
 
 ## 6. Project-specific
 
-<!-- Add your stack/domain rules here. A FastAPI + RAG starter lives in
-     templates/CLAUDE.project.md (in the agentkit repo). Keep this section short and
-     concrete: stack versions, conventions Claude must follow, paths it must respect. -->
+### 語言
+
+所有輸出一律使用**繁體中文**，包括：
+- 對話回覆
+- 文件（README、docs/、sysdoc/ 等）的新增或修改內容
+- commit message、PR title/body **除外**（維持英文，符合 git 慣例）
 
 ---
 
