@@ -1,20 +1,19 @@
-# Updating the vendored ECC subset
+# 更新 vendored 的 ECC 子集
 
-The ECC slice in `payload/.claude/` is pinned to the commit in `VERSION`. To pull a newer
-ECC without re-adding the bloat, re-run the curation against a fresh clone.
+`payload/.claude/` 中的 ECC 切片固定在 `VERSION` 中的 commit。要在不重新引入 bloat 的情況下拉入更新的 ECC，對新的 clone 重新執行裁選。
 
-## Re-sync recipe
+## 重新同步步驟
 
 ```bash
-# 1. clone the version you want
+# 1. clone 你要的版本
 git clone https://github.com/affaan-m/ECC.git /tmp/ECC
-cd /tmp/ECC && git rev-parse HEAD          # note this hash for VERSION
+cd /tmp/ECC && git rev-parse HEAD          # 記下這個 hash，要更新到 VERSION
 
-# 2. from your agentkit repo root:
+# 2. 從你的 agentkit repo 根目錄：
 AK="$(pwd)"          # agentkit repo
 SRC=/tmp/ECC
 
-# 3. re-copy the curated lists (these ARE the curation — edit here to change scope)
+# 3. 重新複製已裁選的清單（這些就是裁選——在這裡編輯來改變範疇）
 AGENTS="planner architect tdd-guide code-reviewer security-reviewer python-reviewer \
 fastapi-reviewer database-reviewer mle-reviewer build-error-resolver refactor-cleaner \
 doc-updater docs-lookup silent-failure-hunter"
@@ -38,26 +37,25 @@ cp "$SRC/contexts/dev.md" "$SRC/contexts/review.md" "$SRC/contexts/research.md" 
 cp "$SRC/mcp-configs/mcp-servers.json" "$AK/payload/.claude/mcp-configs/"
 cp "$SRC/LICENSE" "$AK/ECC-LICENSE"
 
-# 4. bump the commit + date in VERSION, commit, done.
+# 4. 在 VERSION 中更新 commit + 日期，commit，完成。
 ```
 
-## Adding a language pack later
+## 事後加入語言包
 
-If a project needs, say, TypeScript:
+若某個專案需要 TypeScript，例如：
 
 ```bash
 cp -R /tmp/ECC/rules/typescript "$AK/payload/.claude/rules/"
 cp /tmp/ECC/agents/typescript-reviewer.md "$AK/payload/.claude/agents/"
-# add the relevant skills, then import the new rules in CLAUDE.md §5 if they should be always-on.
+# 加入相關技能，然後若要永遠載入，在 CLAUDE.md §5 匯入新規則。
 ```
 
-Keep additions deliberate. Every always-on rule you add is permanent context cost on every
-session — that is exactly the trade-off the curation exists to manage.
+謹慎地加入。你加入的每條永遠載入規則都是每個 session 永久的 context 成本——這正是裁選存在要管理的 tradeoff。
 
-## Sanity check after a sync
+## 同步後的健全性檢查
 
 ```bash
-ls payload/.claude/agents | wc -l        # expect your agent count
-find payload/.claude/skills -name SKILL.md | wc -l   # one per skill
-bash -n install.sh                       # installer still parses
+ls payload/.claude/agents | wc -l        # 預期你的代理數量
+find payload/.claude/skills -name SKILL.md | wc -l   # 每個技能一個
+bash -n install.sh                       # 安裝腳本仍可解析
 ```
