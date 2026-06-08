@@ -3,7 +3,7 @@
   "name": "agentkit",
   "displayName": "agentkit (execution layer)",
   "version": "0.1.0",
-  "description": "Execution layer only: 14 agents, 28 skills, 9 commands, and the mentor output-style. The CLAUDE.md contract, .claude/rules, permissions, and the spec (openspec) / sysdoc layers are NOT shipped here — run install.sh for the full 4-layer kit. See docs/PLUGIN.md.",
+  "description": "僅執行層：14 個代理、28 個技能、9 個指令與 mentor output-style。CLAUDE.md 契約、.claude/rules、permissions 及 spec (openspec) / sysdoc 層不在此 plugin 中——完整四層工具包請執行 install.sh。詳見 docs/PLUGIN.md。",
   "author": { "name": "DancinAndrew" },
   "homepage": "https://github.com/DancinAndrew/agnetkit",
   "repository": "https://github.com/DancinAndrew/agnetkit",

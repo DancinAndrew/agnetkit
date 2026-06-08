@@ -1,33 +1,23 @@
-# Attributions
+# 授權聲明
 
-agentkit vendors and adapts work from four MIT-licensed projects. Their license terms
-are preserved. agentkit itself is MIT (see `LICENSE`, if added).
+agentkit vendor 並改編了四個 MIT 授權專案的成果。它們的授權條款已被保留。agentkit 本身為 MIT（見 `LICENSE`，如有添加）。
 
 ## ECC — `affaan-m/ECC`
-- License: MIT (full text in `ECC-LICENSE`).
-- What is vendored: a curated subset of `agents/`, `skills/`, `rules/{common,python}/`,
-  `commands/`, `contexts/`, and `mcp-configs/mcp-servers.json`, copied verbatim into
-  `payload/.claude/`. Pinned commit recorded in `VERSION`.
-- What is **not** vendored: all non-Python language packs, the hook runtime, and
-  domain skills unrelated to backend/RAG work. See `docs/ARCHITECTURE.md`.
+- 授權：MIT（完整文字在 `ECC-LICENSE`）。
+- Vendored 的內容：`agents/`、`skills/`、`rules/{common,python}/`、`commands/`、`contexts/`，以及 `mcp-configs/mcp-servers.json` 的精選子集，逐字複製進 `payload/.claude/`。固定的 commit 記錄在 `VERSION`。
+- **未** vendor 的內容：所有非 Python 語言包、hook 執行期，以及與後端 / RAG 工作無關的 domain 技能。見 `docs/ARCHITECTURE.md`。
 
-## Andrej Karpathy guidelines — `multica-ai/andrej-karpathy-skills`
-- License: MIT.
-- What is used: the four principles (Think Before Coding, Simplicity First, Surgical
-  Changes, Goal-Driven Execution) form Section 1 of `CLAUDE.md`.
+## Andrej Karpathy 指導方針 — `multica-ai/andrej-karpathy-skills`
+- 授權：MIT。
+- 使用的內容：四條原則（先想再寫、簡單優先、外科手術式修改、目標驅動執行）構成了 `CLAUDE.md` 的第 1 節。
 
-## OpenSpec — `Fission-AI/OpenSpec` (`@fission-ai/openspec`)
-- License: MIT.
-- How it is used: installed at deploy time via npm and scaffolded with `openspec init`.
-  Not vendored — OpenSpec is a CLI and is meant to be installed, not copied.
+## OpenSpec — `Fission-AI/OpenSpec`（`@fission-ai/openspec`）
+- 授權：MIT。
+- 使用方式：在部署時透過 npm 安裝，並以 `openspec init` 建立鷹架。未 vendor——OpenSpec 是一個 CLI，應該被安裝而不是被複製。
 
-## grill-me concept — Matt Pocock (`mattpocock/skills`)
-- License: MIT.
-- What is used: the `grill-me` skill (`payload/.claude/skills/grill-me/`) is an
-  independent reimplementation of the planning-interrogation pattern popularized by Matt
-  Pocock's grill-me skill. No code copied — the SKILL.md is original, written for agentkit.
-  The companion `quiz-me` skill is agentkit-original (the understanding-test counterpart).
+## grill-me 概念 — Matt Pocock（`mattpocock/skills`）
+- 授權：MIT。
+- 使用的內容：`grill-me` 技能（`payload/.claude/skills/grill-me/`）是對 Matt Pocock 的 grill-me 技能所普及的「計畫審問」模式的獨立重新實作。沒有複製任何 code——SKILL.md 是原創的，為 agentkit 撰寫。配套的 `quiz-me` 技能是 agentkit 原創（理解測試的對應物）。
 
 ---
-This is an independent integration and is not affiliated with or endorsed by the authors
-of ECC, the Karpathy guidelines, OpenSpec, or the grill-me skill.
+本專案是獨立整合，與 ECC、Karpathy 指導方針、OpenSpec 或 grill-me 技能的作者沒有關聯或背書。

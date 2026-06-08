@@ -1,78 +1,53 @@
-# Hooks: why they're not vendored
+# Hooks：為什麼沒有 vendor
 
-The original plan was to vendor ECC's `memory-persistence` and `strategic-compact` hooks as
-an opt-in extra. After inspecting the actual code, that turned out to be the wrong call.
-Here's the honest reasoning, so you can decide for yourself.
+原本的計畫是把 ECC 的 `memory-persistence` 和 `strategic-compact` hooks 作為 opt-in 附加品一起 vendor。實際查看 code 之後，發現這個決定是錯的。以下是誠實的推理過程，讓你自己判斷。
 
-## What I found
+## 我發現了什麼
 
-ECC's production hook graph (`hooks/hooks.json`) is **coupled to ECC's native plugin
-install layout**:
+ECC 的 production hook 圖（`hooks/hooks.json`）**與 ECC 的原生 plugin 安裝布局耦合**：
 
-- Every hook command is an inline `node -e "..."` **plugin-root resolver** that hunts for
-  `~/.claude/plugins/ecc/...`, `~/.claude/plugins/cache/ecc/<org>/<version>/...`, etc.
-- The SessionStart hook (`session-start-bootstrap.js`) does **not** do the work itself — it
-  resolves the plugin root and then spawns `run-with-flags.js → session-start.js`, gated by
-  a hook-profile/flags system.
-- The stateful pieces (`session-manager.js`, `state-store/`) pull in native-ish deps
-  (`sql.js`, `ajv`) and a sizeable `scripts/lib/` tree.
+- 每個 hook 指令都是一個 inline 的 `node -e "..."` **plugin-root resolver**，用來尋找 `~/.claude/plugins/ecc/...`、`~/.claude/plugins/cache/ecc/<org>/<version>/...` 等路徑。
+- SessionStart hook（`session-start-bootstrap.js`）**自己不做任何事**——它解析 plugin root，然後 spawn `run-with-flags.js → session-start.js`，並由 hook-profile/flags 系統把關。
+- 有狀態的部件（`session-manager.js`、`state-store/`）拉入了 native-ish 依賴（`sql.js`、`ajv`）以及龐大的 `scripts/lib/` 樹。
 
-The only genuinely standalone script is `pre-compact.js` (a compaction logger). But a
-"save state on compaction" hook with no working SessionStart **loader** is half a system —
-it writes context nobody reads back. Not worth it.
+唯一真正獨立的腳本是 `pre-compact.js`（一個 compaction logger）。但一個沒有能運作的 SessionStart **loader** 的「compaction 時儲存狀態」hook 是半個系統——它寫了沒人會讀回來的 context。不值得。
 
-## The decision
+## 決策
 
-Vendoring this standalone would mean copying a large, tightly-coupled script tree and then
-rewriting its path resolution — fragile, and a direct violation of the Simplicity-First
-principle this kit is built around. So:
+獨立 vendor 這個東西意味著要複製一大堆緊耦合的腳本樹，然後重寫它的路徑解析——很脆弱，且直接違反本工具包核心的 Simplicity-First 原則。所以：
 
-- **agentkit ships hook-free.** This also matches a low-context / local-model friendly
-  default.
-- If you want ECC's hooks, install them **the way they're designed to be installed**:
-  natively, as the ECC plugin.
+- **agentkit 不附帶 hooks。** 這也符合低 context / 本機模型友好的預設設定。
+- 如果你想要 ECC 的 hooks，用**它們被設計的安裝方式**：以原生 plugin 安裝。
 
-## How to add ECC hooks natively (optional)
+## 如何原生加入 ECC hooks（選用）
 
-Hooks are the one ECC surface best obtained from ECC itself. From Claude Code:
+Hooks 是 ECC 中最適合從 ECC 本身取得的部分。在 Claude Code 中：
 
 ```
 /plugin marketplace add https://github.com/affaan-m/ECC
 /plugin install ecc@ecc
 ```
 
-This gives you ECC's hooks (memory persistence, strategic compaction, continuous-learning
-signals) with their resolver and script tree intact.
+這會給你 ECC 的 hooks（記憶持久化、strategic compaction、continuous-learning 訊號），並附帶完整的 resolver 和腳本樹。
 
-> Coexistence caveat: the ECC plugin also ships agents/skills/commands that overlap with
-> agentkit's vendored copies. To avoid duplicate surfaces, if you install the full ECC
-> plugin for its hooks, consider removing the overlapping vendored copies from your
-> project `.claude/` (or vice-versa). Don't run both the plugin **and** ECC's
-> `install.sh --profile full` — that double-install is ECC's most common breakage.
+> 共存注意事項：ECC plugin 也附帶代理 / 技能 / 指令，與 agentkit vendored 的副本有重疊。為了避免重複的建議介面，若你為了 hooks 安裝了完整 ECC plugin，考慮從你的專案 `.claude/` 移除重疊的 vendored 副本（或反之亦然）。不要同時跑 plugin **和** ECC 的 `install.sh --profile full`——那個雙重安裝是 ECC 最常見的 breakage。
 
-## A minimal home-grown memory hook (opt-in, shipped as a template)
+## 一個最小的自製記憶 hook（opt-in，以 template 形式附帶）
 
-agentkit ships one tiny, dependency-free hook as a **template** — not wired by default,
-because hooks stay opt-in: `payload/templates/memory-hook/agentkit-memory-start.sh`. It is a
-`SessionStart` hook that injects the most recent `.agent-memory.md` entry into context, so a
-new session opens already knowing where you left off — no need to type 「繼續」.
+agentkit 附帶一個小型、零依賴的 hook 作為 **template**——不預設接線，因為 hooks 保持 opt-in：`payload/templates/memory-hook/agentkit-memory-start.sh`。這是一個 `SessionStart` hook，它會把最近的 `.agent-memory.md` 條目注入 context，讓新 session 一開始就知道你上次做到哪了——不需要輸入「繼續」。
 
-> **Why only SessionStart (the read side)?** A `SessionEnd` hook *cannot* write a useful
-> summary: it is a plain script that receives the raw transcript path, and summarizing a
-> conversation needs the model, not `awk`. Claude Code also documents that SessionEnd hooks
-> cannot add context. So the **write** stays where it belongs — with Claude, on 「收工」 /
-> `/checkpoint` (CLAUDE.md §7). The hook only automates the **read**, which a script can do.
+> **為什麼只有 SessionStart（讀取端）？** `SessionEnd` hook *無法*寫入有用的摘要：它是一個普通腳本，接收的是原始 transcript 路徑，而摘要一段對話需要的是 model，不是 `awk`。Claude Code 文件也說明 SessionEnd hooks 無法添加 context。所以**寫入**留在它本來應該在的地方——交給 Claude，在「收工」/ `/checkpoint` 時（CLAUDE.md §7）。Hook 只自動化**讀取**，這是腳本做得到的事。
 
-### Wire it (per project)
+### 接線方式（per 專案）
 
-1. Copy the script into the project and make it executable:
+1. 把腳本複製到專案並設為可執行：
    ```bash
    mkdir -p .claude/hooks
    cp ~/.agentkit/payload/templates/memory-hook/agentkit-memory-start.sh .claude/hooks/
    chmod +x .claude/hooks/agentkit-memory-start.sh
    ```
-2. Register it — add this to `.claude/settings.json` (committed, team-wide) or
-   `.claude/settings.local.json` (personal, matching `.agent-memory.md` being git-ignored):
+2. 註冊它——把以下內容加到 `.claude/settings.json`（已 commit、全團隊）或
+   `.claude/settings.local.json`（個人，對應 `.agent-memory.md` 的 git-ignored 狀態）：
    ```json
    {
      "hooks": {
@@ -88,6 +63,6 @@ new session opens already knowing where you left off — no need to type 「繼�
      }
    }
    ```
-   If a `hooks` key already exists, merge the `SessionStart` array rather than overwriting it.
+   若 `hooks` key 已存在，合併 `SessionStart` 陣列而不是覆蓋。
 
-That's the whole thing — ~12 lines of bash, no Node, no dependencies, no plugin resolver.
+就這樣——約 12 行 bash，不需要 Node，不需要依賴，不需要 plugin resolver。
