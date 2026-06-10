@@ -142,6 +142,7 @@
 
 所有輸出一律使用**繁體中文**，包括：
 - 對話回覆
+- 思考過程（extended thinking 區塊）
 - 文件（README、docs/、sysdoc/ 等）的新增或修改內容
 - commit message、PR title/body **除外**（維持英文，符合 git 慣例）
 
