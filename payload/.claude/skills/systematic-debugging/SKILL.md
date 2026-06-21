@@ -61,36 +61,19 @@ Complete each phase before proceeding to the next.
    import logging, os
    log = logging.getLogger("debug")
 
-   # Boundary 1: request layer
-   log.error("ROUTE in: user_id=%r filters=%r", user_id, filters)
-   # Boundary 2: service layer
-   log.error("SERVICE: db_url=%s pool=%s", os.environ.get("DATABASE_URL", "UNSET"), pool.status)
-   # Boundary 3: repository layer
-   log.error("REPO query: %s params=%r", query, params)
-   # Boundary 4: actual call
+   log.error("ROUTE in: user_id=%r filters=%r", user_id, filters)          # boundary 1
+   log.error("SERVICE: db=%s", os.environ.get("DATABASE_URL", "UNSET"))     # boundary 2
+   log.error("REPO query: %s params=%r", query, params)                     # boundary 3
    rows = await conn.fetch(query, *params)
-   log.error("REPO out: rows=%d", len(rows))
+   log.error("REPO out: rows=%d", len(rows))                                # boundary 4
    ```
 
-   This reveals which layer fails (request ✓ → service ✓ → repo ✗), so you investigate the
+   This reveals which layer fails (route ✓ → service ✓ → repo ✗), so you investigate the
    *right* component instead of guessing.
 5. **Trace data flow backward.** When the error is deep in the call stack, the instinct is
-   to fix where it appears — that's a symptom. Trace backward until you find the original
-   trigger, then fix at the source.
-
-   ```
-   Symptom:  asyncpg raises "relation does not exist" inside Repo.fetch()
-   ↑ What called this with a bad table name?   Service.list_items(tenant)
-   ↑ What passed the bad tenant?               Route handler, tenant="" (empty!)
-   ↑ Where did empty come from?                Dependency default never overridden in test
-   Root cause: test fixture didn't set the tenant header → empty string flowed all the way down
-   ```
-
-   When you can't trace manually, capture a stack at the dangerous operation:
-   ```python
-   import traceback
-   log.error("about to run git init in %r\n%s", directory, "".join(traceback.format_stack()))
-   ```
+   to fix where it appears — that's a symptom. Trace backward to the original trigger and fix
+   at the source. See **`root-cause-tracing.md`** in this directory for the full backward-
+   tracing technique and stack-capture recipe.
 
 ### Phase 2: Pattern Analysis
 
@@ -125,83 +108,19 @@ Complete each phase before proceeding to the next.
    symptoms. That's not a failed hypothesis — it's a wrong architecture. Discuss with your
    human partner before attempting fix #4.
 
-## Defense-in-Depth (after finding root cause)
+After fixing at the source, **harden the data path** so the bug can't recur through a
+different route — see **`defense-in-depth.md`** in this directory.
 
-Fixing at one place feels sufficient, but a single check is bypassed by different code paths,
-refactors, or mocks. Validate at EVERY layer the bad data passes through to make the bug
-*structurally impossible*:
+## Supporting Techniques (in this directory)
 
-```python
-# Layer 1 — Entry validation (Pydantic / FastAPI boundary)
-class CreateProject(BaseModel):
-    working_dir: str
-    @field_validator("working_dir")
-    @classmethod
-    def _must_exist(cls, v: str) -> str:
-        if not v.strip():
-            raise ValueError("working_dir cannot be empty")
-        if not Path(v).is_dir():
-            raise ValueError(f"working_dir is not a directory: {v}")
-        return v
-
-# Layer 2 — Business logic guard
-def init_workspace(project_dir: str) -> None:
-    if not project_dir:
-        raise ValueError("project_dir required for workspace init")
-
-# Layer 3 — Environment guard (refuse dangerous ops in the wrong context)
-def git_init(directory: str) -> None:
-    if os.environ.get("ENV") == "test" and not Path(directory).resolve().is_relative_to(tempfile.gettempdir()):
-        raise RuntimeError(f"refusing git init outside tmp during tests: {directory}")
-
-# Layer 4 — Debug instrumentation (forensics when the others miss)
-log.debug("about to git init", extra={"directory": directory, "cwd": os.getcwd()})
-```
-
-Each layer catches what the others miss (different paths bypass entry validation; mocks
-bypass business logic; edge cases need env guards). Don't stop at one validation point.
-
-## Condition-Based Waiting (for flaky async/IO tests)
-
-Flaky tests guess at timing with `time.sleep()` — they pass on fast machines, fail under CI
-load. Wait for the actual condition, not a guess about how long it takes.
-
-```python
-import time
-
-def wait_for(condition, description, timeout=5.0, interval=0.01):
-    """Poll until condition() is truthy, or raise after timeout."""
-    start = time.monotonic()
-    while True:
-        result = condition()
-        if result:
-            return result
-        if time.monotonic() - start > timeout:
-            raise TimeoutError(f"waiting for {description} after {timeout}s")
-        time.sleep(interval)  # poll every 10ms — not every 1ms (wastes CPU)
-
-# ❌ BEFORE: time.sleep(0.05); assert get_result() is not None
-# ✅ AFTER:  wait_for(lambda: get_result() is not None, "result ready")
-```
-For async code use `anyio`/`asyncio` with the same poll loop. An arbitrary sleep is only
-correct when testing *timed behavior itself* (debounce/throttle) — and then it must be
-documented with WHY.
-
-## Finding Which Test Pollutes State
-
-If a file/row/global appears during the suite but you don't know which test created it,
-bisect with pytest isolation:
-
-```bash
-# Run each test file in its own process; the one that leaves the artifact is the polluter.
-for f in $(find tests -name 'test_*.py' | sort); do
-  rm -rf .git_artifact 2>/dev/null
-  python -m pytest "$f" -q >/dev/null 2>&1 || true
-  [ -e .git_artifact ] && { echo "POLLUTER: $f"; break; }
-done
-```
-Or run the whole suite with `pytest -p no:randomly --forked` (pytest-forked) to isolate
-side effects, then narrow down.
+- **`root-cause-tracing.md`** — trace a bug backward through the call stack to the original
+  trigger; how to capture a stack at the dangerous operation.
+- **`defense-in-depth.md`** — after finding root cause, validate at every layer so the bug
+  becomes structurally impossible.
+- **`condition-based-waiting.md`** — replace arbitrary `time.sleep()` in flaky async/IO
+  tests with condition polling.
+- **`find-polluter.sh`** — bisection script: find which test leaves a file/row/global behind.
+  Usage: `./find-polluter.sh '.git_artifact' 'tests'`
 
 ## Red Flags — STOP and Return to Phase 1
 
@@ -235,7 +154,7 @@ If you catch yourself thinking:
 | **1. Root Cause** | Read errors, reproduce, check changes, instrument boundaries, trace backward | Understand WHAT and WHY |
 | **2. Pattern** | Find working examples, compare completely | Identify every difference |
 | **3. Hypothesis** | Form one theory, test minimally | Confirmed or new hypothesis |
-| **4. Implementation** | Failing test → single fix → verify | Bug resolved, tests pass |
+| **4. Implementation** | Failing test → single fix → verify → harden | Bug resolved, tests pass |
 
 **95% of "there's no root cause" cases are incomplete investigation.** If investigation
 genuinely shows the issue is environmental/external, document what you checked, add

@@ -21,7 +21,7 @@ agentkit vendor 並改編了五個 MIT 授權專案的成果。它們的授權�
 
 ## superpowers — `obra/superpowers`、`obra/superpowers-lab`
 - 授權：MIT。
-- 使用的內容：`systematic-debugging` 技能移植自 `obra/superpowers`（其 SKILL.md 與 root-cause-tracing / defense-in-depth / condition-based-waiting 支援檔，濃縮為單一檔並改寫為 Python/pytest 範例）。`finding-duplicate-functions` 技能移植自 `obra/superpowers-lab`（改寫為 Python `ast` 流程）。`verification-loop` 技能吸收了 `verification-before-completion` 的 Iron Law + Gate Function + 反合理化表格。所有移植均改寫範例與措辭，並在各 SKILL.md 的 frontmatter 標註來源。
+- 使用的內容：`systematic-debugging` 技能移植自 `obra/superpowers`，保留其「主檔 + 支援檔」結構（`root-cause-tracing.md`、`defense-in-depth.md`、`condition-based-waiting.md`、可執行的 `find-polluter.sh`），全部改寫為 Python/pytest。`finding-duplicate-functions` 技能移植自 `obra/superpowers-lab`，保留主檔 + `scripts/`（可執行的 `extract_functions.py` + 兩個 prompt 模板），改寫為 Python `ast` 流程。`verification-loop` 技能吸收了 `verification-before-completion` 的 Iron Law + Gate Function + 反合理化表格。所有移植均改寫範例與措辭，並在各 SKILL.md 的 frontmatter 標註來源。
 
 ## OpenKB 啟發 — `VectifyAI/OpenKB`
 - 授權：Apache-2.0。
