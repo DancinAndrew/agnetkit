@@ -8,7 +8,7 @@ agentkit 可以作為原生 Claude Code plugin 安裝——但**只有它的執�
 `.claude-plugin/` manifest 打包了**執行層**——agentkit 四個層次中，唯一對應到 Claude Code plugin 元件模型的那個層次：
 
 - `agents/` — 14 個子代理
-- `skills/` — 28 個技能
+- `skills/` — 31 個技能
 - `commands/` — 9 個斜線指令
 - `output-styles/` — `agentkit Mentor` 風格
 

@@ -1,12 +1,38 @@
 ---
 name: verification-loop
-description: "A comprehensive verification system for Claude Code sessions."
-origin: ECC
+description: "Comprehensive verification for Claude Code sessions. Use before claiming work is complete/fixed/passing and before commits or PRs — run the checks and confirm output before any success claim. Evidence before assertions, always."
+origin: ECC, locally enhanced (Iron Law + Gate from obra/superpowers verification-before-completion, MIT)
 ---
 
 # Verification Loop Skill
 
 A comprehensive verification system for Claude Code sessions.
+
+## The Iron Law
+
+```
+NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
+```
+
+Claiming work is complete without verification is dishonesty, not efficiency. If you haven't
+run the verification command in *this* message, you cannot claim it passes. This backs
+CLAUDE.md §1.4 ("Loop until verified") with an executable gate.
+
+## The Gate Function
+
+```
+BEFORE claiming any status or expressing satisfaction ("Great!", "Done!", "Perfect!"):
+
+1. IDENTIFY: What command proves this claim?
+2. RUN:      Execute the FULL command, fresh and complete.
+3. READ:     Full output — check exit code, count failures.
+4. VERIFY:   Does the output confirm the claim?
+               NO  -> state the actual status with evidence
+               YES -> state the claim WITH the evidence
+5. ONLY THEN: make the claim.
+
+Skip any step = claiming without proof.
+```
 
 ## When to Use
 
@@ -124,3 +150,30 @@ Run: /verify
 
 This skill complements PostToolUse hooks but provides deeper verification.
 Hooks catch issues immediately; this skill provides comprehensive review.
+
+## Common Failures — What a Claim Actually Requires
+
+| Claim | Requires | NOT sufficient |
+|-------|----------|----------------|
+| Tests pass | Test command output: 0 failures | A previous run, "should pass" |
+| Linter clean | Linter output: 0 errors | Partial check, extrapolation |
+| Build succeeds | Build/type-check: exit 0 | "Linter passed", logs look fine |
+| Bug fixed | Test the original symptom: passes | Code changed, assumed fixed |
+| Regression test works | Red→green cycle verified (revert fix, see it FAIL) | Test passes once |
+| Agent completed | `git diff` shows the changes | The agent reported "success" |
+| Requirements met | Line-by-line checklist | "Tests pass, so it's done" |
+
+## Rationalization Prevention
+
+| Excuse | Reality |
+|--------|---------|
+| "Should work now" | RUN the verification. |
+| "I'm confident" | Confidence ≠ evidence. |
+| "Just this once" | No exceptions. |
+| "Linter passed" | Linter ≠ compiler/type-checker. |
+| "Agent said success" | Verify independently with the diff. |
+| "I'm tired" | Exhaustion ≠ excuse. |
+| "Partial check is enough" | Partial proves nothing about the whole. |
+| "Different words, so the rule doesn't apply" | Spirit over letter — any wording implying success counts. |
+
+**The bottom line:** run the command, read the output, THEN claim the result. Non-negotiable.
