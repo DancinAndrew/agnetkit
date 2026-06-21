@@ -40,6 +40,29 @@ MANY SMALL FILES > FEW LARGE FILES:
 - Extract utilities from large modules
 - Organize by feature/domain, not by type
 
+## Module Depth (Deep > Shallow)
+
+Prefer **deep modules**: a simple interface hiding a complex implementation. A module's value
+is the functionality it provides divided by the complexity of its interface — maximize the
+implementation behind the interface, minimize the surface area in front of it.
+
+- **Deep module** — few entry points, lots of capability hidden behind them. The caller
+  needs to know almost nothing about the inside (e.g. a `Cache` exposing `get`/`set` over a
+  complex eviction + serialization backend).
+- **Shallow module** — interface nearly as complex as the implementation; it leaks detail and
+  hides nothing (e.g. a wrapper whose signature mirrors the one function it forwards to).
+
+Why this matters more with AI: code assistants default to *shallow* modules — when a new
+requirement appears, the easy local move is a new file or a new thin function. Left
+unchecked, the codebase fragments into many tiny coupled pieces, and the assistant then can't
+trace intent through the fog. The human's leverage is to **own the interfaces and the module
+boundaries**; the implementation behind a clean boundary can be delegated.
+
+- Define the interface and the boundary first; let the implementation fill in behind it.
+- Critical modules (auth, payments, money, security) — review the implementation too, not
+  just the interface. Don't blindly delegate a blast-radius module.
+- A clean boundary is also a clean test seam: test the interface's behavior, not the internals.
+
 ## Error Handling
 
 ALWAYS handle errors comprehensively:

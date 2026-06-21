@@ -53,7 +53,7 @@ git clone <your-fork-of-agentkit> ~/.agentkit          # 或放任何位置
 
 - `CLAUDE.md` ——操作契約：4 原則 + 路由（spec-first vs fast-path）+ 執行迴圈 + rule imports。
 - `.claude/agents/` ——14 個子代理（planner、architect、tdd-guide、code/security/python/fastapi/database/mle reviewers、build-error-resolver、refactor-cleaner、doc-updater、docs-lookup、silent-failure-hunter）。
-- `.claude/skills/` ——31 個技能（tdd-workflow、search-first、verification-loop、eval-harness、fastapi/backend/api/db 模式、mle-workflow、cost-aware-llm-pipeline、continuous-learning-v2、grill-me、quiz-me、systematic-debugging、finding-duplicate-functions、skill-trigger-eval……）。
+- `.claude/skills/` ——34 個技能（tdd-workflow、search-first、verification-loop、eval-harness、fastapi/backend/api/db 模式、mle-workflow、cost-aware-llm-pipeline、continuous-learning-v2、grill-me、quiz-me、systematic-debugging、finding-duplicate-functions、skill-trigger-eval、ubiquitous-language、post-mortem、adversarial-spec-review……）。
 - `.claude/rules/` ——`common/`（10 條）+ `python/`（6 條）永遠載入的規則。
 - `.claude/commands/` ——9 個便利斜線指令。
 - `.claude/output-styles/agentkit-mentor.md` ——可切換的 mentor 模式，固化 CLAUDE.md §8（Why / Architecture note / Alternative / Worth studying + quiz-me）。已安裝但預設未啟用，需在 `/config` 選擇。（Claude Code 內建的 Explanatory/Learning 風格涵蓋一般教學需求。）

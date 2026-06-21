@@ -78,9 +78,10 @@
 | Skill | 何時用 |
 |-------|--------|
 | `grill-me` | **寫 code 前** 拷問你的設計，一次一題逼到零模糊，再餵給 `/plan`、OpenSpec |
+| `adversarial-spec-review` | **spec 寫好後、寫 code 前** 用反方角度攻擊它，輸出 Must/Should/Nice/可接受風險 |
 | `quiz-me` | **學習時** 蘇格拉底式考你對某段 code/概念的理解，只問不答，找出你的盲點 |
 
-> 口訣：`grill-me` 問你的**計畫**、`quiz-me` 問你的**理解**——開發迴圈的兩端。
+> 口訣：`grill-me` 幫你**生**規格、`adversarial-spec-review` **攻擊**規格、`quiz-me` 問你的**理解**。
 
 ### 其他
 
@@ -92,6 +93,8 @@
 | `context-budget` | 審計 context 消耗，找 token 節省點 |
 | `finding-duplicate-functions` | LLM 生成的 code 長語意重複時，兩階段（haiku 分類→opus 偵測）找出來 |
 | `skill-trigger-eval` | 寫/改完 skill 後，量測它的 description 觸發 precision/recall |
+| `ubiquitous-language` | 接手陌生 codebase 或 AI 一直叫錯領域概念時，建術語表常駐 context |
+| `post-mortem` | 事故/bug/部署失敗後復盤——問「為什麼穿過我們的防線」，把答案回饋成流程改動 |
 
 ---
 

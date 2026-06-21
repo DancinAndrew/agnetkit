@@ -8,7 +8,7 @@ Vendored sources (all MIT — see ATTRIBUTIONS.md):
 
 Curated footprint (Python / FastAPI / RAG-MLOps):
   agents:   14
-  skills:   31    (28 ECC + systematic-debugging, finding-duplicate-functions [superpowers], skill-trigger-eval [original])
+  skills:   34    (28 ECC + systematic-debugging, finding-duplicate-functions [superpowers], skill-trigger-eval, ubiquitous-language, post-mortem, adversarial-spec-review [original])
   rules:    common (10) + python (6)
   commands: 9
   contexts: 3
