@@ -25,7 +25,8 @@
 |-------|--------|
 | `search-first` | 寫 code 前，先搜尋既有工具和 library |
 | `tdd-workflow` | 新功能、bug fix、重構 |
-| `verification-loop` | 驗証成功標準，loop 直到全綠 |
+| `systematic-debugging` | **碰到 bug / test 失敗先用**——找 root cause 再修，四階段 + Iron Law |
+| `verification-loop` | 驗証成功標準，loop 直到全綠（含 evidence-before-claims 卡關）|
 | `eval-harness` | eval-driven development 正式評估框架 |
 | `context-budget` | context 視窗吃太多時，找出 bloat |
 | `continuous-learning-v2` | session 觀察 → 產生 instincts → 演化成新 skills |
@@ -89,6 +90,8 @@
 | `error-handling` | typed errors、retry、circuit breaker（TS/Python/Go）|
 | `deep-research` | 多來源網路研究 + 引用報告（需 firecrawl/exa MCP）|
 | `context-budget` | 審計 context 消耗，找 token 節省點 |
+| `finding-duplicate-functions` | LLM 生成的 code 長語意重複時，兩階段（haiku 分類→opus 偵測）找出來 |
+| `skill-trigger-eval` | 寫/改完 skill 後，量測它的 description 觸發 precision/recall |
 
 ---
 

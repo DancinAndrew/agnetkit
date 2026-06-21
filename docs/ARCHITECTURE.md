@@ -29,7 +29,7 @@ ECC 附帶約 60 個代理、約 180 個技能，以及 TS/Go/Rust/Swift/Java/PH
 `build-error-resolver`、`refactor-cleaner`、`doc-updater`、`docs-lookup`、
 `silent-failure-hunter`。
 
-### 保留的技能（28 個）
+### 保留的技能（31 個）
 工作流程：`tdd-workflow`、`search-first`、`security-review`、`verification-loop`、
 `eval-harness`、`continuous-learning-v2`、`deep-research`、`iterative-retrieval`、
 `context-budget`、`error-handling`、`git-workflow`、`architecture-decision-records`。
@@ -39,6 +39,7 @@ Python / 後端：`python-patterns`、`python-testing`、`fastapi-patterns`、
 RAG/LLM/ML：`mle-workflow`、`cost-aware-llm-pipeline`、`regex-vs-llm-structured-text`、
 `mcp-server-patterns`、`content-hash-cache-pattern`。
 學習：`grill-me`、`quiz-me`。
+除錯 / 品質（**非 ECC**——移植自 obra/superpowers（MIT），及 agentkit 原創）：`systematic-debugging`、`finding-duplicate-functions`、`skill-trigger-eval`。
 
 ### 保留的規則
 `rules/common/`（全部 10 條）+ `rules/python/`（全部 6 條，包含 `fastapi.md`）。沒有其他語言包。

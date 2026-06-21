@@ -52,6 +52,17 @@ cp /tmp/ECC/agents/typescript-reviewer.md "$AK/payload/.claude/agents/"
 
 謹慎地加入。你加入的每條永遠載入規則都是每個 session 永久的 context 成本——這正是裁選存在要管理的 tradeoff。
 
+## 本地修改（ECC re-sync 會覆蓋，務必保留）
+
+上面的 re-sync 會 `rm -rf` 並重新複製 ECC 清單中的 skill。注意兩件事：
+
+- **`verification-loop` 已本地強化**——吸收了 superpowers `verification-before-completion` 的
+  Iron Law + Gate Function + 反合理化表格（見其 frontmatter `origin:`）。它在 ECC `SKILLS` 清單中，
+  所以 re-sync 會覆蓋掉強化。re-sync 後請重新套用，或把它從 `SKILLS` 變數移除以保留本地版。
+- **3 個非 ECC skill 不受 re-sync 影響**——`systematic-debugging`、`finding-duplicate-functions`
+  （移植自 obra/superpowers，MIT）與 `skill-trigger-eval`（原創）不在 `SKILLS` 清單，獨立維護。
+  要更新它們，回到各自上游 repo 重新移植，不要加進 ECC re-sync 清單。
+
 ## 同步後的健全性檢查
 
 ```bash

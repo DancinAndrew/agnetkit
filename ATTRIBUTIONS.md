@@ -1,6 +1,6 @@
 # 授權聲明
 
-agentkit vendor 並改編了四個 MIT 授權專案的成果。它們的授權條款已被保留。agentkit 本身為 MIT（見 `LICENSE`，如有添加）。
+agentkit vendor 並改編了五個 MIT 授權專案的成果。它們的授權條款已被保留。agentkit 本身為 MIT（見 `LICENSE`，如有添加）。
 
 ## ECC — `affaan-m/ECC`
 - 授權：MIT（完整文字在 `ECC-LICENSE`）。
@@ -19,5 +19,13 @@ agentkit vendor 並改編了四個 MIT 授權專案的成果。它們的授權�
 - 授權：MIT。
 - 使用的內容：`grill-me` 技能（`payload/.claude/skills/grill-me/`）是對 Matt Pocock 的 grill-me 技能所普及的「計畫審問」模式的獨立重新實作。沒有複製任何 code——SKILL.md 是原創的，為 agentkit 撰寫。配套的 `quiz-me` 技能是 agentkit 原創（理解測試的對應物）。
 
+## superpowers — `obra/superpowers`、`obra/superpowers-lab`
+- 授權：MIT。
+- 使用的內容：`systematic-debugging` 技能移植自 `obra/superpowers`，保留其「主檔 + 支援檔」結構（`root-cause-tracing.md`、`defense-in-depth.md`、`condition-based-waiting.md`、可執行的 `find-polluter.sh`），全部改寫為 Python/pytest。`finding-duplicate-functions` 技能移植自 `obra/superpowers-lab`，保留主檔 + `scripts/`（可執行的 `extract_functions.py` + 兩個 prompt 模板），改寫為 Python `ast` 流程。`verification-loop` 技能吸收了 `verification-before-completion` 的 Iron Law + Gate Function + 反合理化表格。所有移植均改寫範例與措辭，並在各 SKILL.md 的 frontmatter 標註來源。
+
+## OpenKB 啟發 — `VectifyAI/OpenKB`
+- 授權：Apache-2.0。
+- 使用的內容：`skill-trigger-eval` 技能是 agentkit 原創，**沒有複製任何 code**——它受 OpenKB 的「skill description 觸發準確度 eval」概念啟發，SKILL.md 為 agentkit 重新撰寫。
+
 ---
-本專案是獨立整合，與 ECC、Karpathy 指導方針、OpenSpec 或 grill-me 技能的作者沒有關聯或背書。
+本專案是獨立整合，與 ECC、Karpathy 指導方針、OpenSpec、grill-me 技能、superpowers 或 OpenKB 的作者沒有關聯或背書。
