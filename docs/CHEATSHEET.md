@@ -135,6 +135,7 @@
    ├── 大 (新功能 / 碰 auth,money,DB / 跨檔 / 改外部行為) ── spec-first
    │      → /opsx:propose → 審 proposal+design+tasks.md → 跟人對齊
    │        (tasks.md 就是你的 plan，不要再 /plan)
+   │      → adversarial-spec-review   (spec 寫好後，開 code 前攻擊它，選用)
    │
    └── 小 (typo / 一行 / 明確的局部改) ─────────────────── fast-path
           → /plan (想要步驟就用) 或直接跳下一步
