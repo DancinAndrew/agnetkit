@@ -43,7 +43,7 @@ git clone <your-fork-of-agentkit> ~/.agentkit          # 或放任何位置
 偏好用 `/plugin`？agentkit 附帶 `.claude-plugin/` manifest，打包**執行層**——代理、技能、指令與 mentor output-style：
 
 ```text
-/plugin marketplace add DancinAndrew/agnetkit
+/plugin marketplace add DancinAndrew/agentkit
 /plugin install agentkit@agentkit
 ```
 

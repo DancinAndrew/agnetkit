@@ -33,7 +33,7 @@ agentkit 是一個**四層系統**（原則 → 規格 → 系統文件 → 執�
 ## 安裝方式
 
 ```text
-/plugin marketplace add DancinAndrew/agnetkit
+/plugin marketplace add DancinAndrew/agentkit
 /plugin install agentkit@agentkit
 ```
 
