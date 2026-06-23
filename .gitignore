@@ -8,3 +8,7 @@ node_modules/
 # Session memory file — personal work log, not a team artifact.
 # Each developer has their own; it is never committed.
 .agent-memory.md
+
+# Claude Code local settings — machine-specific, may hold secrets. Never commit.
+.claude/settings.local.json
+**/settings.local.json
