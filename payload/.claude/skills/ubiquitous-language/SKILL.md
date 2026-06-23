@@ -1,7 +1,7 @@
 ---
 name: ubiquitous-language
 description: Build and maintain a project glossary so the human and the AI use the same words for the same things. Use when starting work on an unfamiliar codebase, when the AI keeps misnaming domain concepts, before grill-me / planning on a domain-heavy feature, or when the user says "build a glossary" / "建立術語表". Keep the glossary loaded in context during design and implementation.
-origin: agentkit-original, inspired by Eric Evans' Domain-Driven Design (Ubiquitous Language) and obra's "Software Fundamentals" talk
+origin: agentkit-original, inspired by Eric Evans' Domain-Driven Design (Ubiquitous Language) and Matt Pocock's "Software Fundamentals Matter More Than Ever" talk
 ---
 
 # Ubiquitous Language — one vocabulary for human and AI

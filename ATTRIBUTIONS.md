@@ -29,7 +29,7 @@ agentkit vendor 並改編了五個 MIT 授權專案的成果。它們的授權�
 
 ## 觀念啟發 — Loop Engineering SOP 與 Domain-Driven Design
 - 三個技能為 agentkit 原創，**沒有複製任何 code**，僅吸收公開觀念：
-  - `ubiquitous-language` — 概念源自 Eric Evans《Domain-Driven Design》的 Ubiquitous Language，及 obra「Software Fundamentals Matter More Than Ever」演講中的術語庫實踐。
+  - `ubiquitous-language` — 概念源自 Eric Evans《Domain-Driven Design》的 Ubiquitous Language，及 Matt Pocock「Software Fundamentals Matter More Than Ever」演講中把該觀念用於 AI 協作的術語庫實踐。
   - `post-mortem`、`adversarial-spec-review` — 概念源自「AI-Assisted Loop Engineering 開發流程 SOP」的事後檢討與對抗性規格審查階段。
 - 這些觀念本身屬於軟體工程通用實踐；agentkit 將其改寫為 Python/FastAPI 取向的 SKILL.md。
 
